@@ -1,0 +1,120 @@
+{
+  "name": "gad-helpers",
+  "displayName": "GAD Helpers",
+  "description": "GAD Helpers for VS Code",
+  "author": "jaktestowac.pl",
+  "publisher": "jaktestowac-pl",
+  "version": "0.0.1",
+  "icon": "media/gad-helpers-logo.png",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaktestowac/vscode-gad-helpers.git"
+  },
+  "galleryBanner": {
+    "color": "#2b3137",
+    "theme": "dark"
+  },
+  "keywords": [
+    "node.js",
+    "testing",
+    "automation"
+  ],
+  "categories": [
+    "Testing"
+  ],
+  "activationEvents": [
+    "onView:gad-helpers"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "gad-helpers",
+          "title": "GAD Helpers",
+          "icon": "./media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "gad-helpers": [
+        {
+          "type": "webview",
+          "id": "gad-helpers.commands",
+          "name": "Commands"
+        },
+        {
+          "type": "webview",
+          "id": "gad-helpers.scripts",
+          "name": "Scripts"
+        },
+        {
+          "type": "webview",
+          "id": "gad-helpers.status",
+          "name": "Show Status"
+        },
+        {
+          "type": "webview",
+          "id": "gad-helpers.settings",
+          "name": "Settings"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "gad-helpers.toggleHideShowCommands",
+          "when": "view == gad-helpers.commandsTreeView",
+          "group": "navigation"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "gad-helpers.toggleHideShowCommands",
+        "category": "GAD Helpers",
+        "title": "Toggle Hide/Show Commands",
+        "icon": {
+          "light": "resources/dark/expand-all.svg",
+          "dark": "resources/light/expand-all.svg"
+        }
+      },
+      {
+        "command": "gad-helpers.refreshGadScripts",
+        "category": "GAD Helpers",
+        "title": "Refresh GAD Scripts View",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "publish:patch": "vsce publish patch",
+    "publish:minor": "vsce publish minor",
+    "publish:major": "vsce publish major",
+    "publish": "npm run test && npm run update && npm run publish:patch",
+    "update": "node src/test/readme-generator.js",
+    "test": ""
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.60.0",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.11.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5",
+    "node-fetch": "^3.3.2"
+  }
+}
