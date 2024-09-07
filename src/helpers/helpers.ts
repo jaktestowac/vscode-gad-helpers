@@ -96,7 +96,7 @@ export async function getGadScriptsFromPackageJson(verbose = false): Promise<Gad
 
   if (!foundKeys || foundKeys.length === 0) {
     if (verbose) {
-      showErrorMessage("No GAD scripts found in package.json");
+      showErrorMessage("No scripts found in package.json");
     }
     return [];
   }

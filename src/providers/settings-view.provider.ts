@@ -2,11 +2,14 @@ import * as vscode from "vscode";
 import MyExtensionContext from "../helpers/my-extension.context";
 import { getNonce } from "../helpers/helpers";
 import { KeyValuePairs, NameValuePair, GadSettings, GadSettingsMap } from "../helpers/types";
+import { checkAboutStatus } from "../helpers/app.helpers";
+import { GAD_BASE_URL_KEY } from "../helpers/consts";
 
 export class SettingsViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "gad-helpers.settings";
 
   private _view?: vscode.WebviewView;
+  private _urlIsValid?: boolean;
 
   constructor(private readonly _extensionUri: vscode.Uri, private _settingsList: GadSettings[]) {}
 
@@ -32,10 +35,39 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
           this.invokeToggle(data.key, data.value);
           break;
         }
+        case "updateSettingInput": {
+          const value = data.value.trim();
+          this.updateSetting(data.key, value);
+          break;
+        }
         case "updateEnvVariables": {
           this.updateEnvVariables(data.vars);
           break;
         }
+      }
+    });
+  }
+
+  private updateSetting(key: string, value: string) {
+    MyExtensionContext.instance.setWorkspaceValue(key, value);
+
+    if (key === GAD_BASE_URL_KEY) {
+      this.checkAppUrl();
+    }
+  }
+
+  public async checkAppUrl(): Promise<void> {
+    checkAboutStatus().then((status) => {
+      if (status?.version !== undefined) {
+        this._urlIsValid = true;
+      } else if (status?.error !== undefined) {
+        this._urlIsValid = false;
+      } else {
+        this._urlIsValid = undefined;
+      }
+
+      if (this._view !== undefined) {
+        this._view.webview.html = this._getHtmlForWebview(this._view.webview);
       }
     });
   }
@@ -61,6 +93,13 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
 
     let controlsHTMLList = "";
 
+    let urlStatusIcon = "❓";
+    if (this._urlIsValid === false) {
+      urlStatusIcon = "❌";
+    } else if (this._urlIsValid === true) {
+      urlStatusIcon = "✅";
+    }
+
     const tempList: GadSettingsMap = {};
     for (const setting of this._settingsList) {
       if (!(setting.category in tempList)) {
@@ -80,6 +119,12 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
             isChecked ? "checked" : ""
           } />
           <label for="${key}">${prettyName}</label><br />
+          `;
+        } else if (type === "input") {
+          const value = MyExtensionContext.instance.getWorkspaceValue(key) ?? "";
+          controlsHTMLList += `
+          <label for="${key}">${prettyName} ${urlStatusIcon}</label>
+          <input class="input setting-input" type="text" id="${key}" key="${key}" value="${value}" title="${prettyName}" aria-label="${prettyName}" />
           `;
         }
       }

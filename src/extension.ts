@@ -5,7 +5,7 @@ import { getCommandList } from "./scripts/commands";
 import { getSettingsList } from "./scripts/settings";
 import MyExtensionContext from "./helpers/my-extension.context";
 import { ScriptsViewProvider } from "./providers/scripts-view.provider";
-import { EXTENSION_NAME } from "./helpers/consts";
+import { EXTENSION_NAME, GAD_BASE_URL, GAD_BASE_URL_KEY } from "./helpers/consts";
 import { showInformationMessage } from "./helpers/window-messages.helpers";
 import { getGadScriptsFromPackageJson } from "./helpers/helpers";
 
@@ -13,6 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
   MyExtensionContext.init(context);
   MyExtensionContext.instance.setWorkspaceValue("workspaceFolders", vscode.workspace.workspaceFolders);
   MyExtensionContext.instance.setWorkspaceValue("environmentVariables", []);
+  MyExtensionContext.instance.setWorkspaceValue(GAD_BASE_URL_KEY, GAD_BASE_URL);
 
   const commandsList = getCommandList();
 
@@ -47,8 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
   registerCommand(context, `${EXTENSION_NAME}.refreshGadScripts`, () => {
     getGadScriptsFromPackageJson(true).then((scripts) => {
       scriptsViewProvider.refresh(scripts);
-      showInformationMessage("GAD scripts from package.json refreshed");
+      showInformationMessage("Scripts from package.json refreshed");
     });
+  });
+
+  registerCommand(context, `${EXTENSION_NAME}.refreshGadFeatures`, () => {
+    // TODO: Implement refreshGadFeatures
   });
 
   registerCommand(context, `${EXTENSION_NAME}.toggleHideShowCommands`, () => {});
@@ -56,6 +61,8 @@ export function activate(context: vscode.ExtensionContext) {
   getGadScriptsFromPackageJson().then((scripts) => {
     scriptsViewProvider.refresh(scripts);
   });
+
+  settingsViewProvider.checkAppUrl();
 }
 
 function registerCommand(context: vscode.ExtensionContext, id: string, callback: (...args: any[]) => any) {

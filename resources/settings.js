@@ -19,6 +19,19 @@
     });
   }
 
+  const inputs = document.querySelectorAll(".setting-input");
+  for (const input of inputs) {
+    input.addEventListener("blur", () => {
+      const attributeKey = input.getAttribute("key");
+      vscode.postMessage({
+        type: "updateSettingInput",
+        key: attributeKey,
+        // @ts-ignore
+        value: input.value,
+      });
+    });
+  }
+
   const envVarTable = document.getElementById("envVariablesTableBody");
 
   if (envVarTable) {

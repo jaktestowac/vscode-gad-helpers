@@ -29,23 +29,11 @@ export class StatusViewProvider implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage((data) => {
       switch (data.type) {
         case "updateAboutStatus": {
-          this.updateAboutStatus();
+          // TODO:
           break;
         }
       }
     });
-  }
-
-  private updateAboutStatus() {
-    const myUrl = "http://localhost:3000/api/about";
-
-    fetch(myUrl, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      });
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {

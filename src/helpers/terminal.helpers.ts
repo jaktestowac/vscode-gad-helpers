@@ -85,10 +85,10 @@ export function decorateCommand(
   terminal: vscode.Terminal,
   params: ExecuteInTerminalParameters
 ): ExecuteInTerminalParameters {
-  const verboseApiLogs = MyExtensionContext.instance.getWorkspaceValue("verboseApiLogs");
-  if (verboseApiLogs) {
+  const readOnlyMode = MyExtensionContext.instance.getWorkspaceValue("readOnlyMode");
+  if (readOnlyMode) {
     const setVariable = getMethodForShell(terminal, terminalCommands.setVariable);
-    const cmdToSetEnvVar = setVariable("DEBUG", "pw:api");
+    const cmdToSetEnvVar = setVariable("READ_ONLY", "1");
     const concatCommands = getMethodForShell(terminal, terminalCommands.concatCommands);
     params.command = concatCommands(cmdToSetEnvVar, params.command);
   }

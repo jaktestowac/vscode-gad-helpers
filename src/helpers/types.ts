@@ -4,6 +4,11 @@ export interface ExecuteInTerminalParameters {
   terminalName?: string | undefined;
 }
 
+export interface GadAboutStatus {
+  version?: string;
+  error?: string;
+}
+
 export interface CommandParameters {
   key: string;
   command: string;
@@ -88,6 +93,7 @@ export enum GadSettingsCategory {
 
 export enum GadSettingsType {
   checkbox = "checkbox",
+  input = "input",
 }
 
 export enum CommandComposerCategory {

@@ -54,7 +54,12 @@
         {
           "type": "webview",
           "id": "gad-helpers.status",
-          "name": "Show Status"
+          "name": "Status"
+        },
+        {
+          "type": "webview",
+          "id": "gad-helpers.features",
+          "name": "Features"
         },
         {
           "type": "webview",
@@ -68,6 +73,16 @@
         {
           "command": "gad-helpers.toggleHideShowCommands",
           "when": "view == gad-helpers.commandsTreeView",
+          "group": "navigation"
+        },
+        {
+          "command": "gad-helpers.refreshGadScripts",
+          "when": "view == gad-helpers.scripts",
+          "group": "navigation"
+        },
+        {
+          "command": "gad-helpers.refreshGadFeatures",
+          "when": "view == gad-helpers.features",
           "group": "navigation"
         }
       ]
@@ -86,6 +101,15 @@
         "command": "gad-helpers.refreshGadScripts",
         "category": "GAD Helpers",
         "title": "Refresh GAD Scripts View",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "gad-helpers.refreshGadFeatures",
+        "category": "GAD Features",
+        "title": "Refresh GAD Features View",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
