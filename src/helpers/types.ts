@@ -94,6 +94,7 @@ export enum GadSettingsCategory {
 export enum GadSettingsType {
   checkbox = "checkbox",
   input = "input",
+  directorySelector = "directorySelector",
 }
 
 export enum CommandComposerCategory {

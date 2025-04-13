@@ -1,4 +1,4 @@
-import { GAD_BASE_URL, GAD_BASE_URL_KEY } from "../helpers/consts";
+import { GAD_BASE_URL, GAD_BASE_URL_KEY, GAD_PROJECT_PATH } from "../helpers/consts";
 import { GadSettingsCategory, GadSettingsType, GadSettings } from "../helpers/types";
 
 export function getSettingsList(): GadSettings[] {
@@ -23,6 +23,13 @@ export function getSettingsList(): GadSettings[] {
       prettyName: "GAD Base URL",
       category: GadSettingsCategory.general,
       type: GadSettingsType.input,
+    },
+    {
+      key: GAD_PROJECT_PATH,
+      func: dummyFunc,
+      prettyName: "GAD Project Path",
+      category: GadSettingsCategory.general,
+      type: GadSettingsType.directorySelector,
     },
   ];
 

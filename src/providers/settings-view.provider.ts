@@ -126,6 +126,12 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
           <label for="${key}">${prettyName} ${urlStatusIcon}</label>
           <input class="input setting-input" type="text" id="${key}" key="${key}" value="${value}" title="${prettyName}" aria-label="${prettyName}" />
           `;
+        } else if (type === "directorySelector") {
+          const value = MyExtensionContext.instance.getWorkspaceValue(key) ?? "";
+          controlsHTMLList += `
+          <label for="${key}">${prettyName}</label>
+          <input class="input setting-input" type="file" id="${key}" key="${key}" value="${value}" title="${prettyName}" aria-label="${prettyName}" webkitdirectory directory   />
+          `;
         }
       }
     }

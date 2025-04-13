@@ -81,6 +81,14 @@ export async function getGadScriptsFromPackageJson(verbose = false): Promise<Gad
   }
 
   const workspacePath = workspaceFolders[0].uri.fsPath;
+
+  if (workspacePath === undefined) {
+    if (verbose) {
+      showWarningMessage("No workspace folder found");
+    }
+    return [];
+  }
+
   const packageJsonPath = path.join(workspacePath, "package.json");
 
   if (!fs.existsSync(packageJsonPath)) {
