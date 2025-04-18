@@ -1,8 +1,10 @@
 import * as vscode from "vscode";
 import { CommandParameters, GadCommandsCategory, GadCommand } from "../helpers/types";
 import MyExtensionContext from "../helpers/my-extension.context";
-import { BASE_TERMINAL_NAME } from "../helpers/consts";
-import { executeCommandInTerminal } from "../helpers/terminal.helpers";
+import { BASE_TERMINAL_NAME, GAD_BASE_URL, GAD_BASE_URL_KEY, GAD_PROJECT_PATH, GAD_PROJECT_PATH_KEY } from "../helpers/consts";
+import { executeCommandInTerminal, executeCommandsInTerminal } from "../helpers/terminal.helpers";
+import { exitGadSignal } from "../helpers/app.helpers";
+import { showInformationMessage, showWarningMessage } from "../helpers/window-messages.helpers";
 
 export function getCommandList(): GadCommand[] {
   const commandsList: GadCommand[] = [
@@ -11,6 +13,19 @@ export function getCommandList(): GadCommand[] {
       func: runGad,
       prettyName: "Run GAD ",
       category: GadCommandsCategory.gad,
+    },
+    {
+      key: "exitGad",
+      func: exitGad,
+      prettyName: "Exit GAD ",
+      category: GadCommandsCategory.gad,
+    },
+    {
+      key: "closeAllTerminals",
+      func: closeAllTerminals,
+      prettyName: vscode.l10n.t(`Close All {0} Terminals`, BASE_TERMINAL_NAME),
+      category: GadCommandsCategory.mics,
+      onlyPasteAndRun: true,
     },
   ];
 
@@ -49,11 +64,31 @@ async function executeScript(params: CommandParameters) {
   });
 }
 
+async function exitGad() {
+  const response = await exitGadSignal()
+
+  console.log("Exit GAD response: ", response);
+  if (response.message) {
+    showInformationMessage(vscode.l10n.t("Shut down succeeded."));
+  }
+  else {
+    showWarningMessage(vscode.l10n.t("Shut down failed."));
+  }
+}
+
 async function runGad(params: CommandParameters) {
   const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
-  executeCommandInTerminal({
+  const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+  const addr = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY) ?? GAD_BASE_URL;
+
+  executeCommandsInTerminal([{
+    command: `cd ${value}`,
+    execute,
+    terminalName: `Run GAD`
+  }, {
     command: `npm run start`,
     execute,
     terminalName: `Run GAD`,
-  });
+  }]);
+  showInformationMessage(vscode.l10n.t("GAD is running at {0}", addr));
 }

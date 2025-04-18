@@ -32,6 +32,31 @@
     });
   }
 
+  // Add event listeners for directory select buttons
+  const directoryButtons = document.querySelectorAll(".directory-select-btn");
+  for (const btn of directoryButtons) {
+    btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-key");
+      // Send message to request directory selection through VS Code API
+      vscode.postMessage({
+        type: "selectDirectory",
+        key: key
+      });
+    });
+  }
+
+  // Listen for messages from the extension
+  window.addEventListener('message', event => {
+    const message = event.data;
+    if (message.type === 'directorySelected') {
+      const pathInput = document.getElementById(`${message.key}-path`);
+      if (pathInput) {
+        // @ts-ignore
+        pathInput.value = message.path;
+      }
+    }
+  });
+
   const envVarTable = document.getElementById("envVariablesTableBody");
 
   if (envVarTable) {

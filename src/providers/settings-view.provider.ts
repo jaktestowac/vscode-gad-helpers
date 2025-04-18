@@ -40,12 +40,47 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
           this.updateSetting(data.key, value);
           break;
         }
+        case "selectDirectory": {
+          this.selectDirectory(data.key);
+          break;
+        }
+        case "directorySelected": {
+          this.updateSetting(data.key, data.path);
+          break;
+        }
         case "updateEnvVariables": {
           this.updateEnvVariables(data.vars);
           break;
         }
       }
     });
+  }
+
+  private async selectDirectory(key: string): Promise<void> {
+    const options: vscode.OpenDialogOptions = {
+      canSelectFiles: false,
+      canSelectFolders: true,
+      canSelectMany: false,
+      openLabel: 'Select Directory'
+    };
+
+    const fileUri = await vscode.window.showOpenDialog(options);
+    
+    if (fileUri && fileUri[0]) {
+      const selectedPath = fileUri[0].fsPath;
+      
+      // Update the setting value
+      this.updateSetting(key, selectedPath);
+      
+      // Notify the webview about the selected directory
+      if (this._view) {
+        this._view.webview.postMessage({
+          type: 'directorySelected',
+          key: key,
+          path: selectedPath
+        });
+      }
+    }
   }
 
   private updateSetting(key: string, value: string) {
@@ -110,9 +145,9 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
 
     for (const [category, settings] of Object.entries(tempList)) {
       controlsHTMLList += `<h4 aria-label="${category}" class="nav-list__title">${category}</h4>`;
-      for (const { key, prettyName, type, prettyNameAriaLabel } of settings) {
+      for (const { key, prettyName, type, prettyNameAriaLabel, defaultValue } of settings) {
         if (type === "checkbox") {
-          const isChecked = MyExtensionContext.instance.getWorkspaceValue(key) ?? false;
+          const isChecked = MyExtensionContext.instance.getWorkspaceValue(key) ?? defaultValue;
           const ariaLabel = prettyNameAriaLabel ?? prettyName;
           controlsHTMLList += `
           <input class="checkbox" type="checkbox" id="${key}" key="${key}" title="${ariaLabel}" aria-label="${ariaLabel}" ${
@@ -121,16 +156,19 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
           <label for="${key}">${prettyName}</label><br />
           `;
         } else if (type === "input") {
-          const value = MyExtensionContext.instance.getWorkspaceValue(key) ?? "";
+          const value = MyExtensionContext.instance.getWorkspaceValue(key) ?? defaultValue ?? "";
           controlsHTMLList += `
           <label for="${key}">${prettyName} ${urlStatusIcon}</label>
           <input class="input setting-input" type="text" id="${key}" key="${key}" value="${value}" title="${prettyName}" aria-label="${prettyName}" />
           `;
         } else if (type === "directorySelector") {
-          const value = MyExtensionContext.instance.getWorkspaceValue(key) ?? "";
+          const value = MyExtensionContext.instance.getWorkspaceValue(key) ?? defaultValue ?? "";
           controlsHTMLList += `
           <label for="${key}">${prettyName}</label>
-          <input class="input setting-input" type="file" id="${key}" key="${key}" value="${value}" title="${prettyName}" aria-label="${prettyName}" webkitdirectory directory   />
+          <div class="directory-selector">
+            <input class="input directory-path" type="text" readonly id="${key}-path" value="${value}" title="${prettyName}" aria-label="${prettyName}" />
+            <button class="directory-select-btn" data-key="${key}">Browse...</button>
+          </div>
           `;
         }
       }

@@ -30,6 +30,36 @@
   //     }, 1500);
   //   });
   // }
+
+  // Add double-click event listeners to all command items
+  const commandItems = document.querySelectorAll(".nav-list__item");
+  for (const item of commandItems) {
+    item.addEventListener("dblclick", (event) => {
+      // Find the run icon within this item
+      const runIcon = item.querySelector(".run-icon");
+      if (runIcon && !runIcon.classList.contains("loading")) {
+        const attributeKey = runIcon.getAttribute("key");
+        vscode.postMessage({ type: "invokeCommand", key: attributeKey, instantExecute: true });
+
+        // Disable the button and show loading indicator
+        runIcon.classList.add("loading");
+        item.classList.add("item_loading");
+        // @ts-ignore
+        runIcon.disabled = true;
+
+        setTimeout(() => {
+          runIcon.classList.remove("loading");
+          item.classList.remove("item_loading");
+          // @ts-ignore
+          runIcon.disabled = false;
+        }, 1500);
+
+        // Prevent event from bubbling up
+        event.stopPropagation();
+      }
+    });
+  }
+
   const runIcons = document.querySelectorAll(".run-icon");
   for (const runIcon of runIcons) {
     runIcon.addEventListener("click", () => {

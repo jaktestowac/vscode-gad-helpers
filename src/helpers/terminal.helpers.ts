@@ -4,6 +4,39 @@ import MyExtensionContext from "./my-extension.context";
 import { ExecuteInTerminalParameters, TerminalCommand, TerminalCommandSet, TerminalType } from "./types";
 import * as vscode from "vscode";
 
+export function executeCommandsInTerminal(parameters: ExecuteInTerminalParameters[]) {
+  const reuseTerminal = MyExtensionContext.instance.getWorkspaceValue("reuseTerminal");
+  if (reuseTerminal) {
+    executeCommandsInExistingTerminal(parameters);
+  } else {
+    executeCommandsInNewTerminal(parameters);
+  }
+}
+
+function executeCommandsInNewTerminal(parameters: ExecuteInTerminalParameters[]) {
+  let additionalName = "";
+  if (parameters[0].terminalName !== undefined) {
+    additionalName = `: ${parameters[0].terminalName}`;
+  }
+  const terminal = vscode.window.createTerminal(`${BASE_TERMINAL_NAME}${additionalName}`);
+  for (const param of parameters) {
+    executeCommand(terminal, param, false, false);
+  }
+}
+
+function executeCommandsInExistingTerminal(parameters: ExecuteInTerminalParameters[]) {
+  let existingTerminal = vscode.window.terminals.find((terminal) => terminal.name === BASE_TERMINAL_NAME);
+
+  for (const param of parameters) {
+    if (existingTerminal !== undefined) {
+      executeCommand(existingTerminal, param);
+    } else {
+      existingTerminal = vscode.window.createTerminal(BASE_TERMINAL_NAME);
+      executeCommand(existingTerminal, param);
+    }
+  }
+}
+
 export function executeCommandInTerminal(parameters: ExecuteInTerminalParameters) {
   const reuseTerminal = MyExtensionContext.instance.getWorkspaceValue("reuseTerminal");
   if (reuseTerminal) {
@@ -34,8 +67,11 @@ function executeCommandInExistingTerminal(parameters: ExecuteInTerminalParameter
   }
 }
 
-function executeCommand(terminal: vscode.Terminal, parameters: ExecuteInTerminalParameters, focus = false) {
-  const params = decorateCommand(terminal, parameters);
+function executeCommand(terminal: vscode.Terminal, parameters: ExecuteInTerminalParameters, focus = false, decorateCmd=true) {
+  let params = parameters;
+  if (decorateCmd) {
+    params = decorateCommand(terminal, parameters);
+  }
 
   terminal.show(focus);
   terminal.sendText(params.command, params.execute);

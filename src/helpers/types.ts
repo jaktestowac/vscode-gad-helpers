@@ -7,6 +7,8 @@ export interface ExecuteInTerminalParameters {
 export interface GadAboutStatus {
   version?: string;
   error?: string;
+  message?: string;
+  status?: string;
 }
 
 export interface CommandParameters {
@@ -40,6 +42,7 @@ export interface GadStatus {
 
 export interface GadSettings {
   key: string;
+  defaultValue ?: string | boolean;
   func: (...args: any[]) => any;
   prettyName?: string;
   prettyNameAriaLabel?: string;
