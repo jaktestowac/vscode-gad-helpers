@@ -4,8 +4,18 @@ import MyExtensionContext from "./my-extension.context";
 import { ExecuteInTerminalParameters, TerminalCommand, TerminalCommandSet, TerminalType } from "./types";
 import * as vscode from "vscode";
 
-export function executeCommandsInTerminal(parameters: ExecuteInTerminalParameters[]) {
+function getReuseTerminal(): boolean {
   const reuseTerminal = MyExtensionContext.instance.getWorkspaceValue("reuseTerminal");
+  if (reuseTerminal === undefined) {
+    MyExtensionContext.instance.setWorkspaceValue("reuseTerminal", true);
+    return true;
+  }
+  return reuseTerminal;
+}
+
+export function executeCommandsInTerminal(parameters: ExecuteInTerminalParameters[]) {
+  const reuseTerminal = getReuseTerminal();
+  console.log("reuseTerminal", reuseTerminal);
   if (reuseTerminal) {
     executeCommandsInExistingTerminal(parameters);
   } else {
@@ -38,7 +48,8 @@ function executeCommandsInExistingTerminal(parameters: ExecuteInTerminalParamete
 }
 
 export function executeCommandInTerminal(parameters: ExecuteInTerminalParameters) {
-  const reuseTerminal = MyExtensionContext.instance.getWorkspaceValue("reuseTerminal");
+  const reuseTerminal = getReuseTerminal();
+  
   if (reuseTerminal) {
     executeCommandInExistingTerminal(parameters);
   } else {
@@ -67,7 +78,12 @@ function executeCommandInExistingTerminal(parameters: ExecuteInTerminalParameter
   }
 }
 
-function executeCommand(terminal: vscode.Terminal, parameters: ExecuteInTerminalParameters, focus = false, decorateCmd=true) {
+function executeCommand(
+  terminal: vscode.Terminal,
+  parameters: ExecuteInTerminalParameters,
+  focus = false,
+  decorateCmd = true
+) {
   let params = parameters;
   if (decorateCmd) {
     params = decorateCommand(terminal, parameters);

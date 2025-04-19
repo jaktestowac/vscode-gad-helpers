@@ -15,6 +15,15 @@ export async function checkAboutStatus(): Promise<GadAboutStatus> {
     });
 }
 
+export async function isGadRunning(): Promise<boolean> {
+  return checkAboutStatus().then((status) => {
+    if (status?.version !== undefined) {
+      return true;
+    }
+    return false;
+  });
+}
+
 export async function exitGadSignal(): Promise<GadAboutStatus> {
   const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
   const myUrl = `${appBaseUrl}/api/debug/exit`;

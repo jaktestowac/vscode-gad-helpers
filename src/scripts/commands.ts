@@ -11,9 +11,9 @@ import {
   GAD_REPO_URL,
 } from "../helpers/consts";
 import { executeCommandInTerminal, executeCommandsInTerminal } from "../helpers/terminal.helpers";
-import { exitGadSignal } from "../helpers/app.helpers";
+import { exitGadSignal, isGadRunning } from "../helpers/app.helpers";
 import { showInformationMessage, showWarningMessage } from "../helpers/window-messages.helpers";
-import { checkIfGadCanBeInstalled } from "../helpers/helpers";
+import { checkIfEveryDirectoryExists, checkIfGadCanBeInstalled } from "../helpers/helpers";
 import path from "path";
 
 export function getCommandList(): GadCommand[] {
@@ -101,7 +101,6 @@ async function executeScript(params: CommandParameters) {
 async function exitGad() {
   const response = await exitGadSignal();
 
-  console.log("Exit GAD response: ", response);
   if (response.message) {
     showInformationMessage(vscode.l10n.t("Shut down succeeded."));
   } else {
@@ -113,16 +112,18 @@ async function gadNpmInstall(params: CommandParameters) {
   const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
   const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
 
+  const additionalTerminalName = "install";
+
   executeCommandsInTerminal([
     {
       command: `cd ${value}`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
     {
       command: `npm install`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
   ]);
 }
@@ -141,31 +142,33 @@ async function gadInit(params: CommandParameters) {
     return;
   }
 
+  const additionalTerminalName = "init";
+
   executeCommandsInTerminal([
     {
       command: `cd ${fullPathWithoutProjectDir}`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
     {
       command: `git clone ${GAD_REPO_URL}`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
     {
       command: `cd ${projectDir}`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
     {
       command: `npm install`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
     {
       command: `npm run start`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
   ]);
 }
@@ -184,16 +187,18 @@ async function gadGitClone(params: CommandParameters) {
     return;
   }
 
+  const additionalTerminalName = "clone";
+
   executeCommandsInTerminal([
     {
       command: `cd ${value}`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
     {
       command: `git clone ${GAD_REPO_URL}`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
   ]);
 }
@@ -202,16 +207,18 @@ async function gadGitPull(params: CommandParameters) {
   const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
   const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
 
+  const additionalTerminalName = "pull";
+
   executeCommandsInTerminal([
     {
       command: `cd ${value}`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
     {
       command: `git pull`,
       execute,
-      terminalName: BASE_TERMINAL_NAME,
+      terminalName: additionalTerminalName,
     },
   ]);
 }
@@ -221,17 +228,32 @@ async function runGad(params: CommandParameters) {
   const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
   const addr = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY) ?? GAD_BASE_URL;
 
-  executeCommandsInTerminal([
-    {
-      command: `cd ${value}`,
-      execute,
-      terminalName: BASE_TERMINAL_NAME,
-    },
-    {
-      command: `npm run start`,
-      execute,
-      terminalName: BASE_TERMINAL_NAME,
-    },
-  ]);
-  showInformationMessage(vscode.l10n.t("GAD is running at {0}", addr));
+  const additionalTerminalName = "run";
+
+  isGadRunning().then((isRunning) => {
+    if (isRunning) {
+      showWarningMessage(vscode.l10n.t("GAD is already running at {0}", addr));
+      return;
+    }
+
+    const canBeInstalled = checkIfEveryDirectoryExists(value);
+    if (!canBeInstalled) {
+      showWarningMessage(vscode.l10n.t("GAD cannot be run. Directory does not exist."));
+      return;
+    }
+
+    executeCommandsInTerminal([
+      {
+        command: `cd ${value}`,
+        execute,
+        terminalName: additionalTerminalName,
+      },
+      {
+        command: `npm run start`,
+        execute,
+        terminalName: additionalTerminalName,
+      },
+    ]);
+    showInformationMessage(vscode.l10n.t("GAD is running at {0}", addr));
+  });
 }
