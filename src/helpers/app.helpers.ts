@@ -1,6 +1,6 @@
 import { GAD_BASE_URL_KEY } from "./consts";
 import MyExtensionContext from "./my-extension.context";
-import { GadAboutStatus } from "./types";
+import { GadAboutStatus, GadConfigResponse, GadFeature } from "./types";
 
 export async function checkAboutStatus(): Promise<GadAboutStatus> {
   const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
@@ -25,5 +25,38 @@ export async function exitGadSignal(): Promise<GadAboutStatus> {
     .then((response) => response.json() as Promise<GadAboutStatus>)
     .catch((error) => {
       return { error } as GadAboutStatus;
+    });
+}
+
+export async function getFeaturesList(): Promise<GadFeature[]> {
+  const response = await getFeatureConfig();
+  if (response.config === undefined) {
+    return [] as GadFeature[];
+  }
+
+  const featureKeys = Object.keys(response.config);
+
+  const features: GadFeature[] = featureKeys.map((key) => {
+    return {
+      key,
+      prettyName: key,
+      description: key,
+      value: response.config ? response.config[key] : undefined
+    } as GadFeature;
+  });
+
+  return features;
+}
+
+export async function getFeatureConfig(): Promise<GadConfigResponse> {
+  const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
+  const myUrl = `${appBaseUrl}/api/config/features`;
+
+  return fetch(myUrl, {
+    method: "GET",
+  })
+    .then((response) => response.json() as Promise<GadConfigResponse>)
+    .catch((error) => {
+      return { error } as GadConfigResponse;
     });
 }

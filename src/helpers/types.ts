@@ -11,6 +11,10 @@ export interface GadAboutStatus {
   status?: string;
 }
 
+export interface GadConfigResponse {
+  config?: { [key: string]: boolean };
+}
+
 export interface CommandParameters {
   key: string;
   command: string;
@@ -30,6 +34,13 @@ export interface GadCommand {
   onlyPaste?: boolean;
 }
 
+export interface GadFeature {
+  key: string;
+  prettyName?: string;
+  description?: string;
+  value: boolean;
+}
+
 export interface CheckResult {
   success: boolean;
   message: string;
@@ -42,7 +53,7 @@ export interface GadStatus {
 
 export interface GadSettings {
   key: string;
-  defaultValue ?: string | boolean;
+  defaultValue?: string | boolean;
   func: (...args: any[]) => any;
   prettyName?: string;
   prettyNameAriaLabel?: string;
@@ -52,7 +63,7 @@ export interface GadSettings {
     name: string;
     icon: string;
     actionName: string;
-  }
+  };
 }
 
 export interface GadScripts {
@@ -71,6 +82,10 @@ export interface GadCommandMap {
 
 export interface GadSettingsMap {
   [key: string]: GadSettings[];
+}
+
+export interface GadFeaturesMap {
+  [key: string]: GadFeature[];
 }
 
 export interface GadScriptsMap {

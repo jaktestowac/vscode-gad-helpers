@@ -23,7 +23,7 @@ export function getCommandList(): GadCommand[] {
     {
       key: "closeAllTerminals",
       func: closeAllTerminals,
-      prettyName: vscode.l10n.t(`Close All {0} Terminals`, BASE_TERMINAL_NAME),
+      prettyName: vscode.l10n.t(`Close All GAD Terminals`, BASE_TERMINAL_NAME),
       category: GadCommandsCategory.mics,
       onlyPasteAndRun: true,
     },

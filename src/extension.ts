@@ -5,9 +5,11 @@ import { getCommandList } from "./scripts/commands";
 import { getSettingsList } from "./scripts/settings";
 import MyExtensionContext from "./helpers/my-extension.context";
 import { ScriptsViewProvider } from "./providers/scripts-view.provider";
-import { EXTENSION_NAME, GAD_BASE_URL, GAD_BASE_URL_KEY } from "./helpers/consts";
+import { FeaturesViewProvider } from "./providers/features-view.provider";
+import { EXTENSION_NAME, GAD_BASE_URL, GAD_BASE_URL_KEY, GAD_FEATURES_KEY } from "./helpers/consts";
 import { showInformationMessage } from "./helpers/window-messages.helpers";
 import { getGadScriptsFromPackageJson } from "./helpers/helpers";
+import { getFeaturesList } from "./helpers/app.helpers";
 
 export function activate(context: vscode.ExtensionContext) {
   MyExtensionContext.init(context);
@@ -45,6 +47,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerWebviewViewProvider(ScriptsViewProvider.viewType, scriptsViewProvider)
   );
 
+  // Register the Sidebar Panel - Features
+  const featuresViewProvider = new FeaturesViewProvider(context.extensionUri);
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(FeaturesViewProvider.viewType, featuresViewProvider)
+  );
+
   registerCommand(context, `${EXTENSION_NAME}.refreshGadScripts`, () => {
     getGadScriptsFromPackageJson(true).then((scripts) => {
       scriptsViewProvider.refresh(scripts);
@@ -53,13 +61,21 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   registerCommand(context, `${EXTENSION_NAME}.refreshGadFeatures`, () => {
-    // TODO: Implement refreshGadFeatures
+    getFeaturesList().then((features) => {
+      featuresViewProvider.refresh(features);
+      showInformationMessage("Features refreshed");
+    });
   });
 
   registerCommand(context, `${EXTENSION_NAME}.toggleHideShowCommands`, () => {});
 
   getGadScriptsFromPackageJson().then((scripts) => {
     scriptsViewProvider.refresh(scripts);
+  });
+
+  // Initialize features
+  getFeaturesList().then((features) => {
+    featuresViewProvider.refresh(features);
   });
 
   settingsViewProvider.checkAppUrl();
