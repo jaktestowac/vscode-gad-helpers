@@ -60,6 +60,10 @@ export function activate(context: vscode.ExtensionContext) {
   //   });
   // });
 
+  registerCommand(context, `${EXTENSION_NAME}.refreshGadStatus`, () => {
+    settingsViewProvider.checkAppUrl();
+  });
+
   registerCommand(context, `${EXTENSION_NAME}.refreshGadFeatures`, () => {
     getFeaturesList().then((features) => {
       featuresViewProvider.refresh(features);

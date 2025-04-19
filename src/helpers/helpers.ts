@@ -120,8 +120,18 @@ export function checkIfEveryDirectoryExists(fullPath: string): boolean {
   const directories = fullPath.split(path.sep);
   let currentPath = "";
   for (const dir of directories) {
-    currentPath = path.join(currentPath, dir);
+    if (dir === "") {
+      continue;
+    }
+    if (currentPath === "") {
+      currentPath = dir;
+    } else {
+      currentPath = path.join(currentPath, dir);
+    }
+
+    console.error(`Directory: ${currentPath}`);
     if (!fs.existsSync(currentPath)) {
+      console.error(`Directory not: ${currentPath}`);
       return false;
     }
   }
@@ -132,7 +142,15 @@ export function createEveryDirectory(fullPath: string): boolean {
   const directories = fullPath.split(path.sep);
   let currentPath = "";
   for (const dir of directories) {
-    currentPath = path.join(currentPath, dir);
+    if (dir === "") {
+      continue;
+    }
+    if (currentPath === "") {
+      currentPath = dir;
+    } else {
+      currentPath = path.join(currentPath, dir);
+    }
+
     if (!fs.existsSync(currentPath)) {
       fs.mkdirSync(currentPath, { recursive: true });
     }

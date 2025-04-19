@@ -232,13 +232,13 @@ async function runGad(params: CommandParameters) {
 
   isGadRunning().then((isRunning) => {
     if (isRunning) {
-      showWarningMessage(vscode.l10n.t("GAD is already running at {0}", addr));
+      showWarningMessage(vscode.l10n.t("Is already running at {0}", addr));
       return;
     }
 
-    const canBeInstalled = checkIfEveryDirectoryExists(value);
-    if (!canBeInstalled) {
-      showWarningMessage(vscode.l10n.t("GAD cannot be run. Directory does not exist."));
+    const dirExists = checkIfEveryDirectoryExists(value);
+    if (!dirExists) {
+      showWarningMessage(vscode.l10n.t("Cannot run. Directory '{0}' does not exist.", value));
       return;
     }
 
@@ -254,6 +254,6 @@ async function runGad(params: CommandParameters) {
         terminalName: additionalTerminalName,
       },
     ]);
-    showInformationMessage(vscode.l10n.t("GAD is running at {0}", addr));
+    showInformationMessage(vscode.l10n.t("GAD is starting at {0}", addr));
   });
 }

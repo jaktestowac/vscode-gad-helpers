@@ -104,6 +104,15 @@
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
         }
+      },
+      {
+        "command": "gad-helpers.refreshGadStatus",
+        "category": "GAD Status",
+        "title": "Refresh GAD status",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
       }
     ]
   },
