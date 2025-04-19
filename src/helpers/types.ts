@@ -106,7 +106,7 @@ export interface NameValuePair {
 
 export enum GadCommandsCategory {
   gad = "Gad",
-  browsers = "Browsers",
+  setup = "Setup",
   project = "Project",
   testing = "Testing",
   mics = "Misc",

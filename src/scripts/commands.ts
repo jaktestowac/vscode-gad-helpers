@@ -1,7 +1,15 @@
 import * as vscode from "vscode";
 import { CommandParameters, GadCommandsCategory, GadCommand } from "../helpers/types";
 import MyExtensionContext from "../helpers/my-extension.context";
-import { BASE_TERMINAL_NAME, GAD_BASE_URL, GAD_BASE_URL_KEY, GAD_PROJECT_PATH, GAD_PROJECT_PATH_KEY } from "../helpers/consts";
+import {
+  BASE_TERMINAL_NAME,
+  GAD_BASE_URL,
+  GAD_BASE_URL_KEY,
+  GAD_PROJECT_DIR,
+  GAD_PROJECT_PATH,
+  GAD_PROJECT_PATH_KEY,
+  GAD_REPO_URL,
+} from "../helpers/consts";
 import { executeCommandInTerminal, executeCommandsInTerminal } from "../helpers/terminal.helpers";
 import { exitGadSignal } from "../helpers/app.helpers";
 import { showInformationMessage, showWarningMessage } from "../helpers/window-messages.helpers";
@@ -19,6 +27,30 @@ export function getCommandList(): GadCommand[] {
       func: exitGad,
       prettyName: "Exit GAD ",
       category: GadCommandsCategory.gad,
+    },
+    {
+      key: "gadInit",
+      func: gadInit,
+      prettyName: "GAD Init (clone -> run)",
+      category: GadCommandsCategory.setup,
+    },
+    {
+      key: "gadGitPull",
+      func: gadGitPull,
+      prettyName: "GAD Git Pull",
+      category: GadCommandsCategory.setup,
+    },
+    {
+      key: "gadGitClone",
+      func: gadGitClone,
+      prettyName: "GAD Git Clone",
+      category: GadCommandsCategory.setup,
+    },
+    {
+      key: "gadNpmInstall",
+      func: gadNpmInstall,
+      prettyName: "GAD npm install",
+      category: GadCommandsCategory.setup,
     },
     {
       key: "closeAllTerminals",
@@ -65,15 +97,94 @@ async function executeScript(params: CommandParameters) {
 }
 
 async function exitGad() {
-  const response = await exitGadSignal()
+  const response = await exitGadSignal();
 
   console.log("Exit GAD response: ", response);
   if (response.message) {
     showInformationMessage(vscode.l10n.t("Shut down succeeded."));
-  }
-  else {
+  } else {
     showWarningMessage(vscode.l10n.t("Shut down failed."));
   }
+}
+
+async function gadNpmInstall(params: CommandParameters) {
+  const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
+  const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+
+  executeCommandInTerminal({
+    command: `cd ${value} && npm install`,
+    execute,
+    terminalName: `GAD NPM Install`,
+  });
+}
+
+async function gadInit(params: CommandParameters) {
+  const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
+  const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+
+  executeCommandsInTerminal([
+    {
+      command: `cd ${value}`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+    {
+      command: `git clone ${GAD_REPO_URL}`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+    {
+      command: `cd ${GAD_PROJECT_DIR}`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+    {
+      command: `npm install`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+    {
+      command: `npm run start`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+  ]);
+}
+
+async function gadGitClone(params: CommandParameters) {
+  const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
+  const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+
+  executeCommandsInTerminal([
+    {
+      command: `cd ${value}`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+    {
+      command: `git clone ${GAD_REPO_URL}`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+  ]);
+}
+
+async function gadGitPull(params: CommandParameters) {
+  const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
+  const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+
+  executeCommandsInTerminal([
+    {
+      command: `cd ${value}`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+    {
+      command: `git pull`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+  ]);
 }
 
 async function runGad(params: CommandParameters) {
@@ -81,14 +192,17 @@ async function runGad(params: CommandParameters) {
   const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
   const addr = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY) ?? GAD_BASE_URL;
 
-  executeCommandsInTerminal([{
-    command: `cd ${value}`,
-    execute,
-    terminalName: `Run GAD`
-  }, {
-    command: `npm run start`,
-    execute,
-    terminalName: `Run GAD`,
-  }]);
+  executeCommandsInTerminal([
+    {
+      command: `cd ${value}`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+    {
+      command: `npm run start`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+  ]);
   showInformationMessage(vscode.l10n.t("GAD is running at {0}", addr));
 }
