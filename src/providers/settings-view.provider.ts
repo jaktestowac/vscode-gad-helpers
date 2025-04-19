@@ -1,18 +1,29 @@
 import * as vscode from "vscode";
 import MyExtensionContext from "../helpers/my-extension.context";
-import { getNonce } from "../helpers/helpers";
+import { getNonce, openInBrowser } from "../helpers/helpers";
 import { KeyValuePairs, NameValuePair, GadSettings, GadSettingsMap } from "../helpers/types";
 import { checkAboutStatus } from "../helpers/app.helpers";
-import { GAD_BASE_URL_KEY } from "../helpers/consts";
+import { GAD_BASE_URL_KEY, GAD_REPO_URL } from "../helpers/consts";
 
 export class SettingsViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "gad-helpers.settings";
 
   private _view?: vscode.WebviewView;
   private _urlIsValid?: boolean;
+  private _gadVersion?: string;
   private _actionsOnAppUrlChange = [] as (() => void)[];
 
   constructor(private readonly _extensionUri: vscode.Uri, private _settingsList: GadSettings[]) {}
+
+  private getGadVersion(): string {
+    const gadVersion = this._gadVersion ? this._gadVersion : "unknown";
+    return gadVersion;
+  }
+
+  private getGadUrl(): string {
+    const gadUrl = this._urlIsValid ? MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY) : "unknown";
+    return gadUrl;
+  }
 
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -55,6 +66,10 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
         }
         case "refreshGadStatus": {
           this.checkAppUrl();
+          break;
+        }
+        case "openUrl": {
+          openInBrowser(data.url);
           break;
         }
       }
@@ -104,10 +119,13 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
     checkAboutStatus().then((status) => {
       if (status?.version !== undefined) {
         this._urlIsValid = true;
+        this._gadVersion = status.version;
       } else if (status?.error !== undefined) {
         this._urlIsValid = false;
+        this._gadVersion = undefined;
       } else {
         this._urlIsValid = undefined;
+        this._gadVersion = undefined;
       }
 
       if (this._view !== undefined) {
@@ -140,12 +158,14 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
     const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "resources", "main.css"));
 
     let controlsHTMLList = "";
+    let gadUrlLink = "<strong>[unknown]</strong>";
 
     let urlStatusIcon = "❓";
     if (this._urlIsValid === false) {
       urlStatusIcon = "❌";
     } else if (this._urlIsValid === true) {
       urlStatusIcon = "✅";
+      gadUrlLink = `<button class="link-button" data-url="${this.getGadUrl()}">[Open]</button>`;
     }
 
     const tempList: GadSettingsMap = {};
@@ -155,6 +175,12 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
       }
       tempList[setting.category].push(setting);
     }
+
+    // add Gad version to the settings list
+    controlsHTMLList += `<h4 aria-label="Base Info" class="nav-list__title">Base Info</h4>`;
+    controlsHTMLList += `<label aria-label="Gad Version" >Version: <strong>${this.getGadVersion()}</strong> ${urlStatusIcon}</label><br />`;
+    controlsHTMLList += `<label aria-label="Gad page" >Main page: ${gadUrlLink}</label><br />`;
+    controlsHTMLList += `<label aria-label="Gad Repository" >Repository: <button class="link-button" data-url="${GAD_REPO_URL}">[Open]</button></label>`;
 
     for (const [category, settings] of Object.entries(tempList)) {
       controlsHTMLList += `<h4 aria-label="${category}" class="nav-list__title">${category}</h4>`;

@@ -41,7 +41,7 @@
       if (action) {
         vscode.postMessage({
           type: action,
-          key: key
+          key: key,
         });
       }
     });
@@ -64,7 +64,7 @@
         const defaultValue = inputElement.getAttribute("data-default") || "";
         // @ts-ignore
         inputElement.value = defaultValue;
-        
+
         // If this is a setting input, update the value in the extension
         if (inputElement.classList.contains("setting-input")) {
           const key = inputElement.getAttribute("key");
@@ -98,15 +98,29 @@
       // Send message to request directory selection through VS Code API
       vscode.postMessage({
         type: "selectDirectory",
-        key: key
+        key: key,
       });
     });
   }
 
+  // Add event listeners for URL links
+  const linkButtons = document.querySelectorAll(".link-button");
+  for (const btn of linkButtons) {
+    btn.addEventListener("click", () => {
+      const url = btn.getAttribute("data-url");
+      if (url) {
+        vscode.postMessage({
+          type: "openUrl",
+          url: url,
+        });
+      }
+    });
+  }
+
   // Listen for messages from the extension
-  window.addEventListener('message', event => {
+  window.addEventListener("message", (event) => {
     const message = event.data;
-    if (message.type === 'directorySelected') {
+    if (message.type === "directorySelected") {
       const pathInput = document.getElementById(`${message.key}-path`);
       if (pathInput) {
         // @ts-ignore

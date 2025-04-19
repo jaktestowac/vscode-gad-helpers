@@ -7,6 +7,10 @@ import { showErrorMessage, showWarningMessage } from "./window-messages.helpers"
 import path from "path";
 import { GadScripts } from "./types";
 
+export function openInBrowser(url: string) {
+  vscode.env.openExternal(vscode.Uri.parse(url));
+}
+
 export function getNonce() {
   let text = "";
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

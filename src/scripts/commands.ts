@@ -13,7 +13,7 @@ import {
 import { executeCommandInTerminal, executeCommandsInTerminal } from "../helpers/terminal.helpers";
 import { exitGadSignal, isGadRunning } from "../helpers/app.helpers";
 import { showInformationMessage, showWarningMessage } from "../helpers/window-messages.helpers";
-import { checkIfEveryDirectoryExists, checkIfGadCanBeInstalled } from "../helpers/helpers";
+import { checkIfEveryDirectoryExists, checkIfGadCanBeInstalled, openInBrowser } from "../helpers/helpers";
 import path from "path";
 
 export function getCommandList(): GadCommand[] {
@@ -25,10 +25,18 @@ export function getCommandList(): GadCommand[] {
       category: GadCommandsCategory.gad,
     },
     {
+      key: "openGadMainPage",
+      func: openGadMainPage,
+      prettyName: "Open GAD Page",
+      category: GadCommandsCategory.gad,
+      onlyPasteAndRun: true,
+    },
+    {
       key: "exitGad",
       func: exitGad,
       prettyName: "Exit GAD ",
       category: GadCommandsCategory.gad,
+      onlyPasteAndRun: true,
     },
     {
       key: "gadInit",
@@ -61,9 +69,29 @@ export function getCommandList(): GadCommand[] {
       category: GadCommandsCategory.mics,
       onlyPasteAndRun: true,
     },
+    {
+      key: "openGadRepo",
+      func: openGadRepo,
+      prettyName: "Open GAD Repo",
+      category: GadCommandsCategory.mics,
+      onlyPasteAndRun: true,
+    },
   ];
 
   return commandsList;
+}
+
+function openGadRepo() {
+  openInBrowser(GAD_REPO_URL);
+}
+
+function openGadMainPage() {
+  const gadUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY) ?? undefined;
+  if (gadUrl) {
+    openInBrowser(gadUrl);
+  } else {
+    showWarningMessage(vscode.l10n.t("GAD URL is not set."));
+  }
 }
 
 function findCommandByKey(key: string): GadCommand | undefined {
