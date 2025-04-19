@@ -13,6 +13,8 @@ import {
 import { executeCommandInTerminal, executeCommandsInTerminal } from "../helpers/terminal.helpers";
 import { exitGadSignal } from "../helpers/app.helpers";
 import { showInformationMessage, showWarningMessage } from "../helpers/window-messages.helpers";
+import { checkIfGadCanBeInstalled } from "../helpers/helpers";
+import path from "path";
 
 export function getCommandList(): GadCommand[] {
   const commandsList: GadCommand[] = [
@@ -111,20 +113,37 @@ async function gadNpmInstall(params: CommandParameters) {
   const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
   const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
 
-  executeCommandInTerminal({
-    command: `cd ${value} && npm install`,
-    execute,
-    terminalName: `GAD NPM Install`,
-  });
+  executeCommandsInTerminal([
+    {
+      command: `cd ${value}`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+    {
+      command: `npm install`,
+      execute,
+      terminalName: BASE_TERMINAL_NAME,
+    },
+  ]);
 }
 
 async function gadInit(params: CommandParameters) {
   const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
   const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
 
+  const fullPathWithoutProjectDir = value.split(path.sep).slice(0, -1).join(path.sep);
+  const projectDir = value.split(path.sep).pop() ?? GAD_PROJECT_DIR;
+
+  const canBeInstalled = checkIfGadCanBeInstalled(fullPathWithoutProjectDir);
+
+  if (!canBeInstalled) {
+    showWarningMessage(vscode.l10n.t("GAD cannot be cloned. Directory is not empty."));
+    return;
+  }
+
   executeCommandsInTerminal([
     {
-      command: `cd ${value}`,
+      command: `cd ${fullPathWithoutProjectDir}`,
       execute,
       terminalName: BASE_TERMINAL_NAME,
     },
@@ -134,7 +153,7 @@ async function gadInit(params: CommandParameters) {
       terminalName: BASE_TERMINAL_NAME,
     },
     {
-      command: `cd ${GAD_PROJECT_DIR}`,
+      command: `cd ${projectDir}`,
       execute,
       terminalName: BASE_TERMINAL_NAME,
     },
@@ -154,6 +173,16 @@ async function gadInit(params: CommandParameters) {
 async function gadGitClone(params: CommandParameters) {
   const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
   const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+
+  const fullPathWithoutProjectDir = value.split(path.sep).slice(0, -1).join(path.sep);
+  const projectDir = value.split(path.sep).pop() ?? GAD_PROJECT_DIR;
+
+  const canBeInstalled = checkIfGadCanBeInstalled(fullPathWithoutProjectDir);
+
+  if (!canBeInstalled) {
+    showWarningMessage(vscode.l10n.t("GAD cannot be cloned. Directory is not empty."));
+    return;
+  }
 
   executeCommandsInTerminal([
     {

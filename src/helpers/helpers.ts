@@ -115,3 +115,37 @@ export async function getGadScriptsFromPackageJson(verbose = false): Promise<Gad
 
   return GadScripts;
 }
+
+export function checkIfEveryDirectoryExists(fullPath: string): boolean {
+  const directories = fullPath.split(path.sep);
+  let currentPath = "";
+  for (const dir of directories) {
+    currentPath = path.join(currentPath, dir);
+    if (!fs.existsSync(currentPath)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function createEveryDirectory(fullPath: string): boolean {
+  const directories = fullPath.split(path.sep);
+  let currentPath = "";
+  for (const dir of directories) {
+    currentPath = path.join(currentPath, dir);
+    if (!fs.existsSync(currentPath)) {
+      fs.mkdirSync(currentPath, { recursive: true });
+    }
+  }
+  return true;
+}
+
+export function checkIfDirectoryIsEmpty(directory: string): boolean {
+  const files = fs.readdirSync(directory);
+  return files.length === 0;
+}
+
+export function checkIfGadCanBeInstalled(fullPath: string): boolean {
+  createEveryDirectory(fullPath);
+  return checkIfDirectoryIsEmpty(fullPath);
+}
