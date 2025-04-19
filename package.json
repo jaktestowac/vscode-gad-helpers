@@ -48,16 +48,6 @@
         },
         {
           "type": "webview",
-          "id": "gad-helpers.scripts",
-          "name": "Scripts"
-        },
-        {
-          "type": "webview",
-          "id": "gad-helpers.status",
-          "name": "Status"
-        },
-        {
-          "type": "webview",
           "id": "gad-helpers.features",
           "name": "Features"
         },

@@ -9,10 +9,13 @@ export interface GadAboutStatus {
   error?: string;
   message?: string;
   status?: string;
+  statusCode?: number;
 }
 
 export interface GadConfigResponse {
   config?: { [key: string]: boolean };
+  statusCode?: number;
+  error?: string;
 }
 
 export interface CommandParameters {

@@ -20,4 +20,17 @@
       });
     });
   });
+
+  document.querySelectorAll(".feature-checkbox").forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      const index = checkbox.getAttribute("data-index");
+      const key = checkbox.getAttribute("data-key");
+      vscode.postMessage({
+        type: "changeFeature",
+        value: key,
+        // @ts-ignore
+        checked: checkbox.checked,
+      });
+    });
+  });
 })();

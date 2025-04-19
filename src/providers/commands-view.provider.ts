@@ -7,8 +7,13 @@ export class CommandsViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "gad-helpers.commands";
 
   private _view?: vscode.WebviewView;
+  private _actionsOnCommands = [] as (() => void)[];
 
   constructor(private readonly _extensionUri: vscode.Uri, private _commandList: GadCommand[]) {}
+
+  public registerActionOnCommands(action: () => void) {
+    this._actionsOnCommands.push(action);
+  }
 
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -54,6 +59,10 @@ export class CommandsViewProvider implements vscode.WebviewViewProvider {
     } else {
       commandFunc({ instantExecute: instantExecute });
     }
+
+    setTimeout(() => {
+      this._actionsOnCommands.forEach((action) => action());
+    }, 5000);
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {

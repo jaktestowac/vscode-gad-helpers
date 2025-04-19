@@ -41,11 +41,11 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerWebviewViewProvider(SettingsViewProvider.viewType, settingsViewProvider)
   );
 
-  // Register the Sidebar Panel - Scripts
-  const scriptsViewProvider = new ScriptsViewProvider(context.extensionUri);
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(ScriptsViewProvider.viewType, scriptsViewProvider)
-  );
+  // // Register the Sidebar Panel - Scripts
+  // const scriptsViewProvider = new ScriptsViewProvider(context.extensionUri);
+  // context.subscriptions.push(
+  //   vscode.window.registerWebviewViewProvider(ScriptsViewProvider.viewType, scriptsViewProvider)
+  // );
 
   // Register the Sidebar Panel - Features
   const featuresViewProvider = new FeaturesViewProvider(context.extensionUri);
@@ -53,12 +53,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerWebviewViewProvider(FeaturesViewProvider.viewType, featuresViewProvider)
   );
 
-  registerCommand(context, `${EXTENSION_NAME}.refreshGadScripts`, () => {
-    getGadScriptsFromPackageJson(true).then((scripts) => {
-      scriptsViewProvider.refresh(scripts);
-      showInformationMessage("Scripts from package.json refreshed");
-    });
-  });
+  // registerCommand(context, `${EXTENSION_NAME}.refreshGadScripts`, () => {
+  //   getGadScriptsFromPackageJson(true).then((scripts) => {
+  //     scriptsViewProvider.refresh(scripts);
+  //     showInformationMessage("Scripts from package.json refreshed");
+  //   });
+  // });
 
   registerCommand(context, `${EXTENSION_NAME}.refreshGadFeatures`, () => {
     getFeaturesList().then((features) => {
@@ -69,13 +69,21 @@ export function activate(context: vscode.ExtensionContext) {
 
   registerCommand(context, `${EXTENSION_NAME}.toggleHideShowCommands`, () => {});
 
-  getGadScriptsFromPackageJson().then((scripts) => {
-    scriptsViewProvider.refresh(scripts);
-  });
+  // getGadScriptsFromPackageJson().then((scripts) => {
+  //   scriptsViewProvider.refresh(scripts);
+  // });
 
   // Initialize features
   getFeaturesList().then((features) => {
     featuresViewProvider.refresh(features);
+  });
+
+  settingsViewProvider.registerActionOnAppUrlChange(() => {
+    featuresViewProvider.refreshFeatureList();
+  });
+
+  commandsViewProvider.registerActionOnCommands(() => {
+    settingsViewProvider.checkAppUrl();
   });
 
   settingsViewProvider.checkAppUrl();

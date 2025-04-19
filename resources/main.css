@@ -70,7 +70,6 @@ svg {
   cursor: inherit;
   flex: auto;
   justify-content: space-between;
-
 }
 
 .small-btn {
@@ -88,4 +87,21 @@ svg {
 
 .reset-btn:hover {
   opacity: 1;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.feature-checkbox {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.features-container {
+  margin-top: 12px;
+  padding: 5px;
 }

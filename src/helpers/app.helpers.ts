@@ -28,6 +28,32 @@ export async function exitGadSignal(): Promise<GadAboutStatus> {
     });
 }
 
+export async function changeFeatureValue(key: string, value: boolean): Promise<GadConfigResponse> {
+  const body = JSON.stringify({ [key]: value });
+  const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
+
+  const myUrl = `${appBaseUrl}/api/config/features`;
+  return fetch(myUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body,
+  })
+    .then((response) => {
+      if (response.status !== 200) {
+        return {
+          error: `Error ${response.status}: ${response.statusText}`,
+          statusCode: response.status,
+        } as GadConfigResponse;
+      }
+      return response.json() as Promise<GadConfigResponse>;
+    })
+    .catch((error) => {
+      return { error } as GadConfigResponse;
+    });
+}
+
 export async function getFeaturesList(): Promise<GadFeature[]> {
   const response = await getFeatureConfig();
   if (response.config === undefined) {
@@ -41,7 +67,7 @@ export async function getFeaturesList(): Promise<GadFeature[]> {
       key,
       prettyName: key,
       description: key,
-      value: response.config ? response.config[key] : undefined
+      value: response.config ? response.config[key] : undefined,
     } as GadFeature;
   });
 

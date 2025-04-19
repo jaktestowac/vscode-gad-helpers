@@ -10,6 +10,7 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
 
   private _view?: vscode.WebviewView;
   private _urlIsValid?: boolean;
+  private _actionsOnAppUrlChange = [] as (() => void)[];
 
   constructor(private readonly _extensionUri: vscode.Uri, private _settingsList: GadSettings[]) {}
 
@@ -60,28 +61,32 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
     });
   }
 
+  public registerActionOnAppUrlChange(action: () => void) {
+    this._actionsOnAppUrlChange.push(action);
+  }
+
   private async selectDirectory(key: string): Promise<void> {
     const options: vscode.OpenDialogOptions = {
       canSelectFiles: false,
       canSelectFolders: true,
       canSelectMany: false,
-      openLabel: 'Select Directory'
+      openLabel: "Select Directory",
     };
 
     const fileUri = await vscode.window.showOpenDialog(options);
-    
+
     if (fileUri && fileUri[0]) {
       const selectedPath = fileUri[0].fsPath;
-      
+
       // Update the setting value
       this.updateSetting(key, selectedPath);
-      
+
       // Notify the webview about the selected directory
       if (this._view) {
         this._view.webview.postMessage({
-          type: 'directorySelected',
+          type: "directorySelected",
           key: key,
-          path: selectedPath
+          path: selectedPath,
         });
       }
     }
@@ -107,6 +112,10 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
 
       if (this._view !== undefined) {
         this._view.webview.html = this._getHtmlForWebview(this._view.webview);
+      }
+
+      for (const action of this._actionsOnAppUrlChange) {
+        action();
       }
     });
   }
@@ -162,14 +171,14 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
         } else if (type === "input") {
           const value = MyExtensionContext.instance.getWorkspaceValue(key) ?? defaultValue ?? "";
           const defaultVal = defaultValue ?? "";
-          
+
           // Create custom action button if defined
-          let customActionButton = '';
+          let customActionButton = "";
           if (invokeCustomActionButton) {
             const actionBtn = invokeCustomActionButton;
-            customActionButton = `<button class="reset-btn small-btn" data-action="${actionBtn.actionName}" data-key="${key}" title="${actionBtn.name}">${actionBtn.icon}</button>`;
+            customActionButton = `<button class="reset-btn small-btn custom-action-btn" data-action="${actionBtn.actionName}" data-key="${key}" title="${actionBtn.name}">${actionBtn.icon}</button>`;
           }
-          
+
           controlsHTMLList += `
           <label class="setting-label" for="${key}">
             ${prettyName} ${urlStatusIcon}
