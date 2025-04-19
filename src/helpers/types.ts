@@ -48,6 +48,11 @@ export interface GadSettings {
   prettyNameAriaLabel?: string;
   category: string;
   type: string;
+  invokeCustomActionButton?: {
+    name: string;
+    icon: string;
+    actionName: string;
+  }
 }
 
 export interface GadScripts {

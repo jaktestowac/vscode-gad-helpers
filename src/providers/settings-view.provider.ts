@@ -52,6 +52,10 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
           this.updateEnvVariables(data.vars);
           break;
         }
+        case "refreshGadStatus": {
+          this.checkAppUrl();
+          break;
+        }
       }
     });
   }
@@ -145,7 +149,7 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
 
     for (const [category, settings] of Object.entries(tempList)) {
       controlsHTMLList += `<h4 aria-label="${category}" class="nav-list__title">${category}</h4>`;
-      for (const { key, prettyName, type, prettyNameAriaLabel, defaultValue } of settings) {
+      for (const { key, prettyName, type, prettyNameAriaLabel, defaultValue, invokeCustomActionButton } of settings) {
         if (type === "checkbox") {
           const isChecked = MyExtensionContext.instance.getWorkspaceValue(key) ?? defaultValue;
           const ariaLabel = prettyNameAriaLabel ?? prettyName;
@@ -157,16 +161,39 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
           `;
         } else if (type === "input") {
           const value = MyExtensionContext.instance.getWorkspaceValue(key) ?? defaultValue ?? "";
+          const defaultVal = defaultValue ?? "";
+          
+          // Create custom action button if defined
+          let customActionButton = '';
+          if (invokeCustomActionButton) {
+            const actionBtn = invokeCustomActionButton;
+            customActionButton = `<button class="reset-btn small-btn" data-action="${actionBtn.actionName}" data-key="${key}" title="${actionBtn.name}">${actionBtn.icon}</button>`;
+          }
+          
           controlsHTMLList += `
-          <label for="${key}">${prettyName} ${urlStatusIcon}</label>
-          <input class="input setting-input" type="text" id="${key}" key="${key}" value="${value}" title="${prettyName}" aria-label="${prettyName}" />
+          <label class="setting-label" for="${key}">
+            ${prettyName} ${urlStatusIcon}
+            <span>
+              ${customActionButton}
+              <button class="reset-btn small-btn" data-target="${key}" title="Reset to default value">🧹</button>
+            </span>
+          </label>
+          <div class="input-container">
+            <input class="input setting-input" type="text" id="${key}" key="${key}" value="${value}" 
+                   data-default="${defaultVal}" title="${prettyName}" aria-label="${prettyName}" />
+          </div>
           `;
         } else if (type === "directorySelector") {
           const value = MyExtensionContext.instance.getWorkspaceValue(key) ?? defaultValue ?? "";
+          const defaultVal = defaultValue ?? "";
           controlsHTMLList += `
-          <label for="${key}">${prettyName}</label>
+          <label class="setting-label" for="${key}">
+            ${prettyName}
+            <button class="reset-btn small-btn" data-target="${key}-path" title="Reset to default value">🧹</button>
+          </label>
           <div class="directory-selector">
-            <input class="input directory-path" type="text" readonly id="${key}-path" value="${value}" title="${prettyName}" aria-label="${prettyName}" />
+            <input class="input directory-path" type="text" readonly id="${key}-path" value="${value}" 
+                   data-default="${defaultVal}" title="${prettyName}" aria-label="${prettyName}" />
             <button class="directory-select-btn" data-key="${key}">Browse...</button>
           </div>
           `;

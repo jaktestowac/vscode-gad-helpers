@@ -63,3 +63,29 @@ svg {
   flex: 0;
   cursor: pointer;
 }
+
+.setting-label {
+  display: flex;
+  align-items: center;
+  cursor: inherit;
+  flex: auto;
+  justify-content: space-between;
+
+}
+
+.small-btn {
+  font-size: 1em;
+  padding: 2px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.reset-btn {
+  cursor: pointer;
+  opacity: 0.7;
+  width: 20px;
+}
+
+.reset-btn:hover {
+  opacity: 1;
+}

@@ -10,6 +10,11 @@ export function getSettingsList(): GadSettings[] {
       category: GadSettingsCategory.general,
       type: GadSettingsType.input,
       defaultValue: GAD_BASE_URL,
+      invokeCustomActionButton: {
+        name: "Check GAD Status",
+        icon:  "🔍",
+        actionName: "refreshGadStatus",
+      }
     },
     {
       key: GAD_PROJECT_PATH_KEY,

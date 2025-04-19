@@ -32,6 +32,64 @@
     });
   }
 
+  // Add event listeners for custom action buttons
+  const customActionButtons = document.querySelectorAll(".custom-action-btn");
+  for (const btn of customActionButtons) {
+    btn.addEventListener("click", () => {
+      const action = btn.getAttribute("data-action");
+      const key = btn.getAttribute("data-key");
+      if (action) {
+        vscode.postMessage({
+          type: action,
+          key: key
+        });
+      }
+    });
+  }
+
+  // Add event listeners for reset buttons
+  const resetButtons = document.querySelectorAll(".reset-btn");
+  for (const btn of resetButtons) {
+    btn.addEventListener("click", () => {
+      const targetId = btn.getAttribute("data-target");
+
+      if (!targetId) {
+        console.error("No target ID specified for reset button.");
+        return;
+      }
+
+      // @ts-ignore
+      const inputElement = document.getElementById(targetId);
+      if (inputElement) {
+        const defaultValue = inputElement.getAttribute("data-default") || "";
+        // @ts-ignore
+        inputElement.value = defaultValue;
+        
+        // If this is a setting input, update the value in the extension
+        if (inputElement.classList.contains("setting-input")) {
+          const key = inputElement.getAttribute("key");
+          if (key) {
+            vscode.postMessage({
+              type: "updateSettingInput",
+              key: key,
+              value: defaultValue,
+            });
+          }
+        }
+        // If this is a directory path, update it in the extension
+        else if (inputElement.classList.contains("directory-path")) {
+          // @ts-ignore
+          const key = targetId.replace("-path", "");
+          vscode.postMessage({
+            type: "updateSettingInput",
+            key: key,
+            value: defaultValue,
+          });
+        }
+      }
+    });
+  }
+
   // Add event listeners for directory select buttons
   const directoryButtons = document.querySelectorAll(".directory-select-btn");
   for (const btn of directoryButtons) {
