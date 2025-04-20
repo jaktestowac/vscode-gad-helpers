@@ -63,6 +63,11 @@ export class CommandsViewProvider implements vscode.WebviewViewProvider {
     setTimeout(() => {
       this._actionsOnCommands.forEach((action) => action());
     }, 5000);
+
+    
+    setTimeout(() => {
+      this._actionsOnCommands.forEach((action) => action());
+    }, 10000);
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {

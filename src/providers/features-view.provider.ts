@@ -8,8 +8,13 @@ import { changeFeatureValue, getFeaturesList } from "../helpers/app.helpers";
 export class FeaturesViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = `${EXTENSION_NAME}.features`;
   private _view?: vscode.WebviewView;
+  private _actionsOnRefresh = [] as (() => void)[];
 
   constructor(private readonly _extensionUri: vscode.Uri, private features: GadFeature[] = []) {}
+
+  public registerActionOnRefresh(action: () => void) {
+    this._actionsOnRefresh.push(action);
+  }
 
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -29,6 +34,10 @@ export class FeaturesViewProvider implements vscode.WebviewViewProvider {
       switch (data.type) {
         case "changeFeature": {
           this.changeFeature(data.value, data.checked);
+          break;
+        }
+        case "refreshAppState": {
+          this.executeRefreshActions();
           break;
         }
       }
@@ -60,6 +69,12 @@ export class FeaturesViewProvider implements vscode.WebviewViewProvider {
     this.features = features;
     if (this._view) {
       this._view.webview.html = this._getHtmlForWebview(this._view.webview);
+    }
+  }
+
+  private executeRefreshActions() {
+    for (const action of this._actionsOnRefresh) {
+      action();
     }
   }
 
@@ -98,7 +113,14 @@ export class FeaturesViewProvider implements vscode.WebviewViewProvider {
       </head>
       <body>
         <div class="features-container">
-          ${this.features.length ? featuresHtml : "<p>No features available</p>"}
+          ${
+            this.features.length
+              ? featuresHtml
+              : `
+            <p>No features available</p>
+            <button class="refresh-button">Refresh App State</button>
+          `
+          }
         </div>
         <script nonce="${nonce}" src="${scriptUri}"></script>
       </body>

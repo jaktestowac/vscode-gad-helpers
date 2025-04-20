@@ -90,6 +90,10 @@ export function activate(context: vscode.ExtensionContext) {
     settingsViewProvider.checkAppUrl();
   });
 
+  featuresViewProvider.registerActionOnRefresh(() => {
+    settingsViewProvider.checkAppUrl();
+  });
+
   settingsViewProvider.checkAppUrl();
 }
 

@@ -21,6 +21,16 @@
     });
   });
 
+  // Add handling for the refresh button if it exists
+  const refreshButton = document.querySelector(".refresh-button");
+  if (refreshButton) {
+    refreshButton.addEventListener("click", () => {
+      vscode.postMessage({
+        type: "refreshAppState",
+      });
+    });
+  }
+
   document.querySelectorAll(".feature-checkbox").forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
       const index = checkbox.getAttribute("data-index");

@@ -12,9 +12,9 @@ export function getSettingsList(): GadSettings[] {
       defaultValue: GAD_BASE_URL,
       invokeCustomActionButton: {
         name: "Check GAD Status",
-        icon:  "🔍",
+        icon: "🔍",
         actionName: "refreshGadStatus",
-      }
+      },
     },
     {
       key: GAD_PROJECT_PATH_KEY,
