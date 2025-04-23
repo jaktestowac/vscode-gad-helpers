@@ -1,6 +1,6 @@
 import { GAD_BASE_URL_KEY } from "./consts";
 import MyExtensionContext from "./my-extension.context";
-import { GadAboutStatus, GadConfigResponse, GadFeature } from "./types";
+import { GadAboutStatus, GadConfigResponse, GadFeature, GadRestoreListResponse } from "./types";
 
 export async function checkAboutStatus(): Promise<GadAboutStatus> {
   const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
@@ -27,6 +27,34 @@ export async function isGadRunning(): Promise<boolean> {
 export async function exitGadSignal(): Promise<GadAboutStatus> {
   const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
   const myUrl = `${appBaseUrl}/api/debug/exit`;
+
+  return fetch(myUrl, {
+    method: "GET",
+  })
+    .then((response) => response.json() as Promise<GadAboutStatus>)
+    .catch((error) => {
+      return { error } as GadAboutStatus;
+    });
+}
+
+export async function getRestorGadDbListSignal(): Promise<GadRestoreListResponse> {
+  const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
+  const myUrl = `${appBaseUrl}/api/restore/list`;
+
+  return fetch(myUrl, {
+    method: "GET",
+  })
+    .then((response) => response.json() as Promise<GadRestoreListResponse>)
+    .catch((error) => {
+      return { error } as GadRestoreListResponse;
+    });
+}
+
+export async function resetGadDbSignal(apiPath:string): Promise<GadAboutStatus> {
+  const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
+  const endpoint = apiPath === undefined ? "/api/restoreDB" : apiPath;
+  
+  const myUrl = `${appBaseUrl}${endpoint}`;
 
   return fetch(myUrl, {
     method: "GET",

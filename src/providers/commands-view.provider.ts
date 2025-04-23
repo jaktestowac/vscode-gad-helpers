@@ -60,14 +60,22 @@ export class CommandsViewProvider implements vscode.WebviewViewProvider {
       commandFunc({ instantExecute: instantExecute });
     }
 
-    setTimeout(() => {
-      this._actionsOnCommands.forEach((action) => action());
-    }, 5000);
+    if (command.refreshSettings === true) {
+      setTimeout(() => {
+        this._actionsOnCommands.forEach((action) => action());
+      }, 5000);
 
-    
-    setTimeout(() => {
-      this._actionsOnCommands.forEach((action) => action());
-    }, 10000);
+      setTimeout(() => {
+        this._actionsOnCommands.forEach((action) => action());
+      }, 10000);
+    }
+  }
+
+  public refresh(commandList: GadCommand[]) {
+    this._commandList = commandList;
+    if (this._view) {
+      this._view.webview.html = this._getHtmlForWebview(this._view.webview);
+    }
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {

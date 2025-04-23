@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { CommandParameters, GadCommandsCategory, GadCommand } from "../helpers/types";
+import { CommandParameters, GadCommandsCategory, GadCommand, GadRestoreListResponse } from "../helpers/types";
 import MyExtensionContext from "../helpers/my-extension.context";
 import {
   BASE_TERMINAL_NAME,
@@ -11,7 +11,7 @@ import {
   GAD_REPO_URL,
 } from "../helpers/consts";
 import { executeCommandInTerminal, executeCommandsInTerminal } from "../helpers/terminal.helpers";
-import { exitGadSignal, isGadRunning } from "../helpers/app.helpers";
+import { exitGadSignal, isGadRunning, resetGadDbSignal } from "../helpers/app.helpers";
 import { showInformationMessage, showWarningMessage } from "../helpers/window-messages.helpers";
 import { checkIfEveryDirectoryExists, checkIfGadCanBeInstalled, openInBrowser } from "../helpers/helpers";
 import path from "path";
@@ -23,6 +23,7 @@ export function getCommandList(): GadCommand[] {
       func: runGad,
       prettyName: "Run GAD ",
       category: GadCommandsCategory.gad,
+      refreshSettings: true,
     },
     {
       key: "openGadMainPage",
@@ -37,12 +38,14 @@ export function getCommandList(): GadCommand[] {
       prettyName: "Exit GAD ",
       category: GadCommandsCategory.gad,
       onlyPasteAndRun: true,
+      refreshSettings: true,
     },
     {
       key: "gadInit",
       func: gadInit,
       prettyName: "GAD Init (clone -> run)",
       category: GadCommandsCategory.setup,
+      refreshSettings: true,
     },
     {
       key: "gadGitPull",
@@ -79,6 +82,24 @@ export function getCommandList(): GadCommand[] {
   ];
 
   return commandsList;
+}
+
+export function generateResetDbCommandList(list: GadRestoreListResponse): GadCommand[] {
+  if (!list || !list.dbRestoreList) {
+    return [];
+  }
+
+  const commandsList = list?.dbRestoreList?.map((item) => {
+    return {
+      key: item.name,
+      func: () => restoreDB(item.path),
+      prettyName: `${item.name}`,
+      category: GadCommandsCategory.restoreDb,
+      onlyPasteAndRun: true,
+    };
+  });
+
+  return commandsList as GadCommand[];
 }
 
 function openGadRepo() {
@@ -124,6 +145,16 @@ async function executeScript(params: CommandParameters) {
     execute,
     terminalName: params.terminalName,
   });
+}
+
+async function restoreDB(apiPath: string) {
+  const response = await resetGadDbSignal(apiPath);
+
+  if (response.message) {
+    showInformationMessage(vscode.l10n.t("Restore DB succeeded."));
+  } else {
+    showWarningMessage(vscode.l10n.t("Restore DB failed."));
+  }
 }
 
 async function exitGad() {

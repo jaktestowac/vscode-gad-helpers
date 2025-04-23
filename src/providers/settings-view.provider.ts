@@ -117,6 +117,9 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
 
   public async checkAppUrl(): Promise<void> {
     checkAboutStatus().then((status) => {
+      const prevousUrlIsValid = this._urlIsValid;
+      const previousGadVersion = this._gadVersion;
+
       if (status?.version !== undefined) {
         this._urlIsValid = true;
         this._gadVersion = status.version;
@@ -132,8 +135,11 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
         this._view.webview.html = this._getHtmlForWebview(this._view.webview);
       }
 
-      for (const action of this._actionsOnAppUrlChange) {
-        action();
+      if (this._urlIsValid !== prevousUrlIsValid || this._gadVersion !== previousGadVersion) {
+        // Notify the webview about the URL change
+        for (const action of this._actionsOnAppUrlChange) {
+          action();
+        }
       }
     });
   }

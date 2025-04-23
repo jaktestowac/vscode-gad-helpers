@@ -12,6 +12,15 @@ export interface GadAboutStatus {
   statusCode?: number;
 }
 
+export interface GadRestoreListResponse {
+  error?: string;
+  message?: string;
+  dbRestoreList?: {
+    name: string;
+    path: string;
+  }[];
+}
+
 export interface GadConfigResponse {
   config?: { [key: string]: boolean };
   statusCode?: number;
@@ -35,6 +44,7 @@ export interface GadCommand {
   params?: CommandParameters;
   onlyPasteAndRun?: boolean;
   onlyPaste?: boolean;
+  refreshSettings?: boolean;
 }
 
 export interface GadFeature {
@@ -108,6 +118,7 @@ export enum GadCommandsCategory {
   gad = "Gad",
   setup = "Setup",
   project = "Project",
+  restoreDb = "Restore DB",
   testing = "Testing",
   mics = "Misc",
 }
