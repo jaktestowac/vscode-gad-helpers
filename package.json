@@ -4,7 +4,7 @@
   "description": "GAD Helpers for VS Code",
   "author": "jaktestowac.pl",
   "publisher": "jaktestowac-pl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "icon": "media/gad-helpers-logo.png",
   "engines": {
     "vscode": "^1.60.0"
