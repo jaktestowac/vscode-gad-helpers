@@ -4,6 +4,7 @@ import { getNonce, openInBrowser } from "../helpers/helpers";
 import { KeyValuePairs, NameValuePair, GadSettings, GadSettingsMap } from "../helpers/types";
 import { checkAboutStatus } from "../helpers/app.helpers";
 import { GAD_BASE_URL_KEY, GAD_REPO_URL } from "../helpers/consts";
+import { showInformationMessage } from "../helpers/window-messages.helpers";
 
 export class SettingsViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "gad-helpers.settings";
@@ -65,7 +66,7 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
           break;
         }
         case "refreshGadStatus": {
-          this.checkAppUrl();
+          this.checkAppUrl(true);
           break;
         }
         case "openUrl": {
@@ -115,17 +116,23 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  public async checkAppUrl(): Promise<void> {
+  public async checkAppUrl(verbose=false): Promise<void> {
     checkAboutStatus().then((status) => {
-      const prevousUrlIsValid = this._urlIsValid;
+      const previousUrlIsValid = this._urlIsValid;
       const previousGadVersion = this._gadVersion;
 
       if (status?.version !== undefined) {
         this._urlIsValid = true;
         this._gadVersion = status.version;
+        if (verbose) {
+          showInformationMessage("GAD is online: " + status.version);
+        }
       } else if (status?.error !== undefined) {
         this._urlIsValid = false;
         this._gadVersion = undefined;
+        if (verbose) {
+          showInformationMessage("GAD is offline");
+        }
       } else {
         this._urlIsValid = undefined;
         this._gadVersion = undefined;
@@ -135,7 +142,7 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
         this._view.webview.html = this._getHtmlForWebview(this._view.webview);
       }
 
-      if (this._urlIsValid !== prevousUrlIsValid || this._gadVersion !== previousGadVersion) {
+      if (this._urlIsValid !== previousUrlIsValid || this._gadVersion !== previousGadVersion) {
         // Notify the webview about the URL change
         for (const action of this._actionsOnAppUrlChange) {
           action();

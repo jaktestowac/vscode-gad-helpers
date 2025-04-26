@@ -6,7 +6,7 @@
 
 # Description
 
-This Visual Studio Code extension adds predefined commands for application **🐍 GAD**, allowing you to easily manage, run, and interact with the GAD testing application directly from VS Code.
+This VS Code extension adds predefined commands for application **🐍 GAD**, allowing you to easily manage, run, and interact with the GAD testing application directly from VS Code.
 
 ## About GAD
 
@@ -30,7 +30,6 @@ The GAD Helpers extension provides the following features:
 - **Features Management**: Enable/disable GAD features directly from VS Code
 - **Settings Configuration**: Easily configure GAD-related settings
 - **Terminal Integration**: Run commands in integrated terminal with proper environment setup
-- **Favorites**: Mark frequently used commands as favorites for quick access
 
 ## Commands List
 
@@ -122,3 +121,5 @@ Please ensure that your code follows our coding guidelines and includes appropri
 - [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
 **Enjoy!**
+
+Powered by [jaktestowac.pl](https://www.jaktestowac.pl/) team!

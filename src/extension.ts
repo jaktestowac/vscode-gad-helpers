@@ -61,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
   // });
 
   registerCommand(context, `${EXTENSION_NAME}.refreshGadStatus`, () => {
-    settingsViewProvider.checkAppUrl();
+    settingsViewProvider.checkAppUrl(true);
   });
 
   registerCommand(context, `${EXTENSION_NAME}.refreshGadFeatures`, () => {
@@ -97,7 +97,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   featuresViewProvider.registerActionOnRefresh(() => {
-    settingsViewProvider.checkAppUrl();
+    settingsViewProvider.checkAppUrl(true);
   });
 
   settingsViewProvider.checkAppUrl();
