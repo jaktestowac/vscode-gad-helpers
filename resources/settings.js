@@ -5,6 +5,51 @@
 (function () {
   // @ts-ignore
   const vscode = acquireVsCodeApi();
+  const state = vscode.getState();
+
+  console.log("State:", state);
+  const gadHelpersSettingsState = state?.gadHelpersSettingsState ? state.gadHelpersSettingsState : {};
+
+  function updateWholeSettingsState(gadHelpersSettingsState) {
+    vscode.setState({ gadHelpersSettingsState });
+  }
+
+  function updateSettingsState(key, value, gadHelpersSettingsState) {
+    console.log("Updating settings state:", key, value);
+    gadHelpersSettingsState[key] = value;
+    updateWholeSettingsState(gadHelpersSettingsState);
+    console.log("Updated settings state:", gadHelpersSettingsState);
+  }
+
+  restoreSettingsState(gadHelpersSettingsState);
+
+  function restoreSettingsState(gadHelpersSettingsState, toDefault = false) {
+    const settingInputs = document.querySelectorAll(".setting-input");
+    const directoryPaths = document.querySelectorAll(".directory-path");
+
+    for (const input of settingInputs) {
+      const attributeKey = input.getAttribute("key");
+
+      if (gadHelpersSettingsState[attributeKey] === undefined) {
+        const defaultValue = input.getAttribute("data-default");
+        // @ts-ignore
+        gadHelpersSettingsState[attributeKey] = defaultValue;
+      }
+      input.value = gadHelpersSettingsState[attributeKey];
+    }
+
+    for (const path of directoryPaths) {
+      const attributeKey = path.getAttribute("key");
+
+      if (gadHelpersSettingsState[attributeKey] === undefined) {
+        const defaultValue = path.getAttribute("data-default");
+        // @ts-ignore
+        gadHelpersSettingsState[attributeKey] = defaultValue;
+      }
+      path.value = gadHelpersSettingsState[attributeKey];
+    }
+    console.log("Updated settings state:", gadHelpersSettingsState);
+  }
 
   const checkboxes = document.querySelectorAll(".checkbox");
   for (const checkbox of checkboxes) {
@@ -29,6 +74,9 @@
         // @ts-ignore
         value: input.value,
       });
+
+      // @ts-ignore
+      updateSettingsState(attributeKey, input.value, gadHelpersSettingsState);
     });
   }
 
@@ -75,6 +123,7 @@
               value: defaultValue,
             });
           }
+          updateSettingsState(key, defaultValue, gadHelpersSettingsState);
         }
         // If this is a directory path, update it in the extension
         else if (inputElement.classList.contains("directory-path")) {
@@ -85,6 +134,7 @@
             key: key,
             value: defaultValue,
           });
+          updateSettingsState(key, defaultValue, gadHelpersSettingsState);
         }
       }
     });
@@ -100,6 +150,9 @@
         type: "selectDirectory",
         key: key,
       });
+      const pathInput = document.getElementById(`${key}`);
+      // @ts-ignore
+      updateSettingsState(`${key}`, pathInput.value, gadHelpersSettingsState);
     });
   }
 
@@ -121,7 +174,7 @@
   window.addEventListener("message", (event) => {
     const message = event.data;
     if (message.type === "directorySelected") {
-      const pathInput = document.getElementById(`${message.key}-path`);
+      const pathInput = document.getElementById(`${message.key}`);
       if (pathInput) {
         // @ts-ignore
         pathInput.value = message.path;

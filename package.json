@@ -1,7 +1,7 @@
 {
   "name": "gad-helpers",
   "displayName": "GAD Helpers",
-  "description": "GAD Helpers for VS Code",
+  "description": "Helpers for GAD application, that help to manage GAD scripts, features and status.",
   "author": "jaktestowac.pl",
   "publisher": "jaktestowac-pl",
   "version": "0.1.1",

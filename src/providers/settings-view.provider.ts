@@ -116,7 +116,7 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  public async checkAppUrl(verbose=false): Promise<void> {
+  public async checkAppUrl(verbose = false): Promise<void> {
     checkAboutStatus().then((status) => {
       const previousUrlIsValid = this._urlIsValid;
       const previousGadVersion = this._gadVersion;
@@ -237,10 +237,10 @@ export class SettingsViewProvider implements vscode.WebviewViewProvider {
           controlsHTMLList += `
           <label class="setting-label" for="${key}">
             ${prettyName}
-            <button class="reset-btn small-btn" data-target="${key}-path" title="Reset to default value">🧹</button>
+            <button class="reset-btn small-btn" data-target="${key}" title="Reset to default value">🧹</button>
           </label>
           <div class="directory-selector">
-            <input class="input directory-path" type="text" readonly id="${key}-path" value="${value}" 
+            <input class="input directory-path" type="text" readonly id="${key}" value="${value}" key="${key}"
                    data-default="${defaultVal}" title="${prettyName}" aria-label="${prettyName}" />
             <button class="directory-select-btn" data-key="${key}">Browse...</button>
           </div>
