@@ -2,9 +2,13 @@
 
 All notable changes to the "gad-helpers" extension will be documented in this file.
 
-## [1.0.1] - 2025-xx-xx
+## [0.1.2] - 2025-xx-xx
 
-- feat: TBD
+- TBD: 
+
+## [0.1.1] - 2025-04-26
+
+- feat: new logo
 
 ## [0.1.0] - 2025-04-26
 
