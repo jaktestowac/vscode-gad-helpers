@@ -6,6 +6,9 @@ All notable changes to the "gad-helpers" extension will be documented in this fi
 
 - feat: TBD
 
-## [1.0.0] - 2025-04-xx
+## [0.1.0] - 2025-04-26
 
-- Initial and stable release
+- Initial and first stable release
+- feat: basic functionality for GAD Helpers
+- feat: added commands for running, exiting, and initializing GAD
+- feat: added commands for managing GAD features
