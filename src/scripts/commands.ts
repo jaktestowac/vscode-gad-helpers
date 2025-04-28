@@ -191,10 +191,11 @@ async function gadInit(params: CommandParameters) {
   const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
   const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
 
-  const fullPathWithoutProjectDir = value.split(path.sep).slice(0, -1).join(path.sep);
-  const projectDir = value.split(path.sep).pop() ?? GAD_PROJECT_DIR;
+  const fullPathWitProjectDir = value;
+  const fullPathWithoutProjectDir = fullPathWitProjectDir.split(path.sep).slice(0, -1).join(path.sep);
+  const projectDir = fullPathWitProjectDir.split(path.sep).pop() ?? GAD_PROJECT_DIR;
 
-  const canBeInstalled = checkIfGadCanBeInstalled(fullPathWithoutProjectDir);
+  const canBeInstalled = checkIfGadCanBeInstalled(fullPathWitProjectDir);
 
   if (!canBeInstalled) {
     showWarningMessage(vscode.l10n.t("GAD cannot be cloned. Directory is not empty."));

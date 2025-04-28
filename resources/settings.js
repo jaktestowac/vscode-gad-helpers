@@ -51,6 +51,17 @@
     console.log("Updated settings state:", gadHelpersSettingsState);
   }
 
+  const directoryPaths = document.querySelectorAll(".directory-path");
+  for (const path of directoryPaths) {
+    path.addEventListener("change", () => {
+      const attributeKey = path.getAttribute("key");
+      const pathValue = path.value;
+
+      // @ts-ignore
+      updateSettingsState(attributeKey, pathValue, gadHelpersSettingsState);
+    });
+  }
+
   const checkboxes = document.querySelectorAll(".checkbox");
   for (const checkbox of checkboxes) {
     checkbox.addEventListener("change", () => {
