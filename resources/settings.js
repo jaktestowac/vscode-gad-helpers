@@ -7,7 +7,6 @@
   const vscode = acquireVsCodeApi();
   const state = vscode.getState();
 
-  console.log("State:", state);
   const gadHelpersSettingsState = state?.gadHelpersSettingsState ? state.gadHelpersSettingsState : {};
 
   function updateWholeSettingsState(gadHelpersSettingsState) {
@@ -15,10 +14,8 @@
   }
 
   function updateSettingsState(key, value, gadHelpersSettingsState) {
-    console.log("Updating settings state:", key, value);
     gadHelpersSettingsState[key] = value;
     updateWholeSettingsState(gadHelpersSettingsState);
-    console.log("Updated settings state:", gadHelpersSettingsState);
   }
 
   restoreSettingsState(gadHelpersSettingsState);
@@ -151,6 +148,19 @@
     });
   }
 
+  window.addEventListener("message", (event) => {
+    const message = event.data;
+    if (message.type === "directorySelected") {
+      const pathInput = document.getElementById(`${message.key}`);
+      if (pathInput) {
+        // @ts-ignore
+        pathInput.value = message.path;
+        // Add this line to update the settings state with the new path
+        updateSettingsState(message.key, message.path, gadHelpersSettingsState);
+      }
+    }
+  });
+
   // Add event listeners for directory select buttons
   const directoryButtons = document.querySelectorAll(".directory-select-btn");
   for (const btn of directoryButtons) {
@@ -161,9 +171,6 @@
         type: "selectDirectory",
         key: key,
       });
-      const pathInput = document.getElementById(`${key}`);
-      // @ts-ignore
-      updateSettingsState(`${key}`, pathInput.value, gadHelpersSettingsState);
     });
   }
 
