@@ -2,11 +2,15 @@
 
 All notable changes to the "gad-helpers" extension will be documented in this file.
 
-## [0.1.3] - 2025-xx-xx
+## [0.1.4] - 2025-xx-xx
 
 - TBD:
 
-## [0.1.2] - 2025-04-xx
+## [0.1.3] - 2025-04-28
+
+- feat: add event listeners for directory path changes and update settings state
+
+## [0.1.2] - 2025-04-27
 
 - feat: added settings
 
