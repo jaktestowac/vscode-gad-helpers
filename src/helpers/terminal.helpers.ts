@@ -15,7 +15,6 @@ function getReuseTerminal(): boolean {
 
 export function executeCommandsInTerminal(parameters: ExecuteInTerminalParameters[]) {
   const reuseTerminal = getReuseTerminal();
-  console.log("reuseTerminal", reuseTerminal);
   if (reuseTerminal) {
     executeCommandsInExistingTerminal(parameters);
   } else {

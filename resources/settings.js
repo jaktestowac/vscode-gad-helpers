@@ -45,7 +45,6 @@
       }
       path.value = gadHelpersSettingsState[attributeKey];
     }
-    console.log("Updated settings state:", gadHelpersSettingsState);
   }
 
   const directoryPaths = document.querySelectorAll(".directory-path");

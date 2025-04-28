@@ -2,9 +2,13 @@
 
 All notable changes to the "gad-helpers" extension will be documented in this file.
 
-## [0.1.4] - 2025-xx-xx
+## [0.1.5] - 2025-xx-xx
 
 - TBD:
+
+## [0.1.4] - 2025-04-28
+
+- fix: existing commands for init GAD
 
 ## [0.1.3] - 2025-04-28
 

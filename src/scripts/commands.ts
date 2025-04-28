@@ -46,12 +46,22 @@ export function getCommandList(): GadCommand[] {
       prettyName: "GAD Init (clone -> run)",
       category: GadCommandsCategory.setup,
       refreshSettings: true,
+      onlyPasteAndRun: true,
+    },
+    {
+      key: "gadPullInstallRun",
+      func: gadPullInstallRun,
+      prettyName: "GAD Pull, npm Install & Run",
+      category: GadCommandsCategory.setup,
+      refreshSettings: true,
+      onlyPasteAndRun: true,
     },
     {
       key: "gadGitPull",
       func: gadGitPull,
       prettyName: "GAD Git Pull",
       category: GadCommandsCategory.setup,
+      onlyPasteAndRun: true,
     },
     {
       key: "gadGitClone",
@@ -62,7 +72,7 @@ export function getCommandList(): GadCommand[] {
     {
       key: "gadNpmInstall",
       func: gadNpmInstall,
-      prettyName: "GAD npm install",
+      prettyName: "GAD npm Install",
       category: GadCommandsCategory.setup,
     },
     {
@@ -192,7 +202,6 @@ async function gadInit(params: CommandParameters) {
   const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
 
   const fullPathWitProjectDir = value;
-
   const canBeInstalled = checkIfGadCanBeInstalled(fullPathWitProjectDir);
 
   if (!canBeInstalled) {
@@ -209,12 +218,42 @@ async function gadInit(params: CommandParameters) {
       terminalName: additionalTerminalName,
     },
     {
-      command: `git clone ${GAD_REPO_URL}`,
+      command: `git clone ${GAD_REPO_URL} .`, // Clone into the current directory
       execute,
       terminalName: additionalTerminalName,
     },
     {
-      command: `cd ${projectDir}`,
+      command: `cd ${fullPathWitProjectDir}`,
+      execute,
+      terminalName: additionalTerminalName,
+    },
+    {
+      command: `npm install`,
+      execute,
+      terminalName: additionalTerminalName,
+    },
+    {
+      command: `npm run start`,
+      execute,
+      terminalName: additionalTerminalName,
+    },
+  ]);
+}
+
+async function gadPullInstallRun(params: CommandParameters) {
+  const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
+  const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+
+  const additionalTerminalName = "pullInstallRun";
+
+  executeCommandsInTerminal([
+    {
+      command: `cd ${value}`,
+      execute,
+      terminalName: additionalTerminalName,
+    },
+    {
+      command: `git pull`,
       execute,
       terminalName: additionalTerminalName,
     },
@@ -246,12 +285,12 @@ async function gadGitClone(params: CommandParameters) {
 
   executeCommandsInTerminal([
     {
-      command: `cd ${value}`,
+      command: `cd ${fullPath}`,
       execute,
       terminalName: additionalTerminalName,
     },
     {
-      command: `git clone ${GAD_REPO_URL}`,
+      command: `git clone ${GAD_REPO_URL} .`, // Clone into the current directory
       execute,
       terminalName: additionalTerminalName,
     },

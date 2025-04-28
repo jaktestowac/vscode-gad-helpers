@@ -162,8 +162,8 @@ export function createEveryDirectory(fullPath: string): boolean {
   return true;
 }
 
-export function checkIfDirectoryIsEmpty(directory: string): boolean {
-  const files = fs.readdirSync(directory);
+export function checkIfDirectoryIsEmpty(dir: string): boolean {
+  const files = fs.readdirSync(dir);
   return files.length === 0;
 }
 
