@@ -71,6 +71,14 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
 
+  registerCommand(context, `${EXTENSION_NAME}.refreshGadSettings`, () => {
+    // refresh features list
+    getFeaturesList().then((features) => {
+      featuresViewProvider.refresh(features);
+      showInformationMessage("Settings refreshed");
+    });
+  });
+
   registerCommand(context, `${EXTENSION_NAME}.toggleHideShowCommands`, () => {});
 
   // getGadScriptsFromPackageJson().then((scripts) => {
