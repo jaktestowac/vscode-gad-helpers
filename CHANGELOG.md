@@ -2,9 +2,14 @@
 
 All notable changes to the "gad-helpers" extension will be documented in this file.
 
-## [0.1.6] - 2025-xx-xx
+## [0.1.7] - 2025-xx-xx
 
 - TBD: feat: command to refresh GAD settings
+
+## [0.1.6] - 2025-05-04
+
+- feat: improve refresh GAD settings command; 
+- fix: typo in function name
 
 ## [0.1.5] - 2025-05-04
 

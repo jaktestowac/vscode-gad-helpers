@@ -9,7 +9,7 @@ import { FeaturesViewProvider } from "./providers/features-view.provider";
 import { EXTENSION_NAME, GAD_BASE_URL, GAD_BASE_URL_KEY, GAD_FEATURES_KEY } from "./helpers/consts";
 import { showInformationMessage } from "./helpers/window-messages.helpers";
 import { getGadScriptsFromPackageJson } from "./helpers/helpers";
-import { getFeaturesList, getRestorGadDbListSignal } from "./helpers/app.helpers";
+import { getFeaturesList, getRestoreGadDbListSignal } from "./helpers/app.helpers";
 
 export function activate(context: vscode.ExtensionContext) {
   MyExtensionContext.init(context);
@@ -72,11 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   registerCommand(context, `${EXTENSION_NAME}.refreshGadSettings`, () => {
-    // refresh features list
-    getFeaturesList().then((features) => {
-      featuresViewProvider.refresh(features);
-      showInformationMessage("Settings refreshed");
-    });
+    settingsViewProvider.checkAppUrl(true);
   });
 
   registerCommand(context, `${EXTENSION_NAME}.toggleHideShowCommands`, () => {});
@@ -92,7 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   settingsViewProvider.registerActionOnAppUrlChange(() => {
     featuresViewProvider.refreshFeatureList();
-    getRestorGadDbListSignal().then((response) => {
+    getRestoreGadDbListSignal().then((response) => {
       const baseList = getCommandList();
       const commandsList = generateResetDbCommandList(response);
       baseList.push(...commandsList);

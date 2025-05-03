@@ -37,7 +37,7 @@ export async function exitGadSignal(): Promise<GadAboutStatus> {
     });
 }
 
-export async function getRestorGadDbListSignal(): Promise<GadRestoreListResponse> {
+export async function getRestoreGadDbListSignal(): Promise<GadRestoreListResponse> {
   const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
   const myUrl = `${appBaseUrl}/api/restore/list`;
 
@@ -50,10 +50,10 @@ export async function getRestorGadDbListSignal(): Promise<GadRestoreListResponse
     });
 }
 
-export async function resetGadDbSignal(apiPath:string): Promise<GadAboutStatus> {
+export async function resetGadDbSignal(apiPath: string): Promise<GadAboutStatus> {
   const appBaseUrl = MyExtensionContext.instance.getWorkspaceValue(GAD_BASE_URL_KEY);
   const endpoint = apiPath === undefined ? "/api/restoreDB" : apiPath;
-  
+
   const myUrl = `${appBaseUrl}${endpoint}`;
 
   return fetch(myUrl, {
