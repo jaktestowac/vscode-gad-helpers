@@ -6,8 +6,9 @@ All notable changes to the "gad-helpers" extension will be documented in this fi
 
 - TBD:
 
-## [0.1.7] - 2025-xx-xx
+## [0.1.7] - 2025-05-05
 
+- feat: MCP commands to command list
 - chore: screenshot of GAD Helpers to README
 
 ## [0.1.6] - 2025-05-04
