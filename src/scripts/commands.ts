@@ -77,14 +77,14 @@ export function getCommandList(): GadCommand[] {
     },
     {
       key: "listMcpServers",
-      func: () => runCommandPaletteCommand({ command: "workbench.mcp.listServer" }),
+      func: () => runCommandPaletteCommand({ command: "workbench.mcp.listServer", key: "listMcpServers" }),
       prettyName: "List MCP Servers",
       category: GadCommandsCategory.mcp,
       onlyPasteAndRun: true,
     },
     {
       key: "addMcpServer",
-      func: () => runCommandPaletteCommand({ command: "workbench.mcp.addConfiguration" }),
+      func: () => runCommandPaletteCommand({ command: "workbench.mcp.addConfiguration", key: "addMcpServer" }),
       prettyName: "Add MCP Servers",
       category: GadCommandsCategory.mcp,
       onlyPasteAndRun: true,
@@ -95,6 +95,7 @@ export function getCommandList(): GadCommand[] {
       prettyName: "Add GAD MCP Servers",
       category: GadCommandsCategory.mcp,
       params: {
+        key: "addGadMcpServer",
         command: `code --add-mcp '{\\"name\\":\\"gad-mcp-server\\",\\"command\\":\\"npx\\",\\"args\\":[\\"@gad-mcp-server@latest\\"]}'`,
         terminalName: "Add GAD MCP Server",
       },

@@ -45,6 +45,7 @@ export interface GadCommand {
   onlyPasteAndRun?: boolean;
   onlyPaste?: boolean;
   refreshSettings?: boolean;
+  instantExecute?: boolean;
 }
 
 export interface GadFeature {
