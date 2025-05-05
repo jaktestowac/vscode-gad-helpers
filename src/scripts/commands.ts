@@ -76,6 +76,30 @@ export function getCommandList(): GadCommand[] {
       category: GadCommandsCategory.setup,
     },
     {
+      key: "listMcpServers",
+      func: () => runCommandPaletteCommand({ command: "workbench.mcp.listServer" }),
+      prettyName: "List MCP Servers",
+      category: GadCommandsCategory.mcp,
+      onlyPasteAndRun: true,
+    },
+    {
+      key: "addMcpServer",
+      func: () => runCommandPaletteCommand({ command: "workbench.mcp.addConfiguration" }),
+      prettyName: "Add MCP Servers",
+      category: GadCommandsCategory.mcp,
+      onlyPasteAndRun: true,
+    },
+    {
+      key: "addGadMcpServer",
+      func: executeScript,
+      prettyName: "Add GAD MCP Servers",
+      category: GadCommandsCategory.mcp,
+      params: {
+        command: `code --add-mcp '{\\"name\\":\\"gad-mcp-server\\",\\"command\\":\\"npx\\",\\"args\\":[\\"@gad-mcp-server@latest\\"]}'`,
+        terminalName: "Add GAD MCP Server",
+      },
+    },
+    {
       key: "closeAllTerminals",
       func: closeAllTerminals,
       prettyName: vscode.l10n.t(`Close All GAD Terminals`, BASE_TERMINAL_NAME),
@@ -110,6 +134,11 @@ export function generateResetDbCommandList(list: GadRestoreListResponse): GadCom
   });
 
   return commandsList as GadCommand[];
+}
+
+async function runCommandPaletteCommand(params: CommandParameters): Promise<void> {
+  const command = params.command;
+  await vscode.commands.executeCommand(command);
 }
 
 function openGadRepo() {
@@ -148,7 +177,7 @@ function closeAllTerminals() {
   });
 }
 
-async function executeScript(params: CommandParameters) {
+async function executeScript(params: GadCommand) {
   const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
   executeCommandInTerminal({
     command: params.command,

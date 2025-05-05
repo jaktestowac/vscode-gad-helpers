@@ -120,6 +120,7 @@ export enum GadCommandsCategory {
   project = "Project",
   restoreDb = "Restore DB",
   testing = "Testing",
+  mcp = "MCP",
   mics = "Misc",
 }
 
