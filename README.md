@@ -31,6 +31,10 @@ The GAD Helpers extension provides the following features:
 - **Settings Configuration**: Easily configure GAD-related settings
 - **Terminal Integration**: Run commands in integrated terminal with proper environment setup
 
+<p align="center">
+  <img src="https://github.com/jaktestowac/vscode-gad-helpers/blob/main/media/gad-helpers-screen?raw=true" width="200px" alt="GAD Helpers screenshot">
+</p>
+
 ## Commands List
 
 | Command                              | Description               |
