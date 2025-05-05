@@ -178,7 +178,7 @@ function closeAllTerminals() {
   });
 }
 
-async function executeScript(params: GadCommand) {
+async function executeScript(params: CommandParameters) {
   const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
   executeCommandInTerminal({
     command: params.command,
