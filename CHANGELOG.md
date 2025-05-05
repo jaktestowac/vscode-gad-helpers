@@ -2,9 +2,13 @@
 
 All notable changes to the "gad-helpers" extension will be documented in this file.
 
-## [0.1.8] - 2025-xx-xx
+## [0.1.9] - 2025-xx-xx
 
 - TBD:
+
+## [0.1.8] - 2025-xx-xx
+
+- fix: GAD MCP server name
 
 ## [0.1.7] - 2025-05-05
 

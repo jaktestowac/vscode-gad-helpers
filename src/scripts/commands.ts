@@ -96,7 +96,7 @@ export function getCommandList(): GadCommand[] {
       category: GadCommandsCategory.mcp,
       params: {
         key: "addGadMcpServer",
-        command: `code --add-mcp '{\\"name\\":\\"gad-mcp-server\\",\\"command\\":\\"npx\\",\\"args\\":[\\"@gad-mcp-server@latest\\"]}'`,
+        command: `code --add-mcp '{\\"name\\":\\"gad-mcp-server\\",\\"command\\":\\"npx\\",\\"args\\":[\\"gad-mcp-server@latest\\"]}'`,
         terminalName: "Add GAD MCP Server",
       },
     },
