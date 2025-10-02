@@ -15,6 +15,7 @@ import { exitGadSignal, isGadRunning, resetGadDbSignal } from "../helpers/app.he
 import { showInformationMessage, showWarningMessage } from "../helpers/window-messages.helpers";
 import { checkIfEveryDirectoryExists, checkIfGadCanBeInstalled, openInBrowser } from "../helpers/helpers";
 import path from "path";
+import * as fs from "fs";
 
 export function getCommandList(): GadCommand[] {
   const commandsList: GadCommand[] = [
@@ -24,6 +25,12 @@ export function getCommandList(): GadCommand[] {
       prettyName: "Run GAD ",
       category: GadCommandsCategory.gad,
       refreshSettings: true,
+    },
+    {
+      key: "showGadVersion",
+      func: showGadVersion,
+      prettyName: "Show GAD Version",
+      category: GadCommandsCategory.gad,
     },
     {
       key: "openGadMainPage",
@@ -438,4 +445,33 @@ async function runGad(params: CommandParameters) {
     ]);
     showInformationMessage(vscode.l10n.t("GAD is starting at {0}", addr));
   });
+}
+
+async function showGadVersion() {
+  const projectPath = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+
+  const dirExists = checkIfEveryDirectoryExists(projectPath);
+  if (!dirExists) {
+    showWarningMessage(vscode.l10n.t("Cannot read version. Directory '{0}' does not exist.", projectPath));
+    return;
+  }
+
+  const packageJsonPath = path.join(projectPath, "package.json");
+  if (!fs.existsSync(packageJsonPath)) {
+    showWarningMessage(vscode.l10n.t("Cannot read version. File '{0}' does not exist.", packageJsonPath));
+    return;
+  }
+
+  try {
+    const content = await vscode.workspace.fs.readFile(vscode.Uri.file(packageJsonPath));
+    const json = JSON.parse(content.toString());
+    const version = json?.version as string | undefined;
+    if (version) {
+      showInformationMessage(vscode.l10n.t("GAD version: {0}", version));
+    } else {
+      showWarningMessage(vscode.l10n.t("Version field not found in package.json"));
+    }
+  } catch (error: any) {
+    showWarningMessage(vscode.l10n.t("Failed to read version: {0}", error?.message ?? String(error)));
+  }
 }

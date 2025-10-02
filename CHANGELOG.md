@@ -4,7 +4,7 @@ All notable changes to the "gad-helpers" extension will be documented in this fi
 
 ## [2.0.1] - 2025-xx-xx
 
-- TBD:
+- feat: command to show GAD version from package.json
 
 ## [2.0.0] - 2025-10-02
 
