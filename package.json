@@ -4,7 +4,7 @@
   "description": "Helpers for GAD application, that help to manage GAD scripts, features and status.",
   "author": "jaktestowac.pl",
   "publisher": "jaktestowac-pl",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "icon": "media/gad-helpers-logo.png",
   "engines": {
     "vscode": "^1.60.0"
