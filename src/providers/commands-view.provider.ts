@@ -33,14 +33,14 @@ export class CommandsViewProvider implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage((data) => {
       switch (data.type) {
         case "invokeCommand": {
-          this.invokeCommand(data.key, data.instantExecute);
+          this.invokeCommand(data.key, data.instantExecute, data.additionalParameters);
           break;
         }
       }
     });
   }
 
-  private invokeCommand(commandName: string, instantExecute: boolean) {
+  private invokeCommand(commandName: string, instantExecute: boolean, additionalParameters?: string) {
     const command = this._commandList.find((command) => command.key === commandName);
     if (command === undefined) {
       return;
@@ -54,10 +54,10 @@ export class CommandsViewProvider implements vscode.WebviewViewProvider {
     const commandParams = command?.params;
 
     if (commandParams !== undefined) {
-      commandParams.instantExecute = instantExecute;
-      commandFunc(commandParams);
+      const paramsToSend = { ...commandParams, instantExecute, additionalParameters } as any;
+      commandFunc(paramsToSend);
     } else {
-      commandFunc({ instantExecute: instantExecute });
+      commandFunc({ instantExecute, additionalParameters } as any);
     }
 
     if (command.refreshSettings === true) {
@@ -107,7 +107,7 @@ export class CommandsViewProvider implements vscode.WebviewViewProvider {
       let idx = 0;
 
       const sortedCommands = commands.sort((a, b) => a.prettyName.localeCompare(b.prettyName));
-      for (const { key, prettyName, params, onlyPasteAndRun, onlyPaste } of sortedCommands) {
+      for (const { key, prettyName, params, onlyPasteAndRun, onlyPaste, textBoxInput } of sortedCommands) {
         let toolTipText = prettyName;
 
         if (params !== undefined) {
@@ -127,6 +127,11 @@ export class CommandsViewProvider implements vscode.WebviewViewProvider {
         }
         playButtons += `<span class="star-icon" title="Add to favorites" key="${key}">${svgStarEmptyIcon}</span>`;
 
+        const inputHtml = textBoxInput
+          ? `<input type="text" class="command-input" data-key="${key}" aria-label="${textBoxInput.prompt ?? "Input"}"
+               placeholder="${textBoxInput.placeHolder ?? ""}" value="${textBoxInput.value ?? ""}" />`
+          : "";
+
         buttonHTMLList += `
           <div class="nav-list__item list__item_not_clickable" category="${category}" index="${idx}" key="${key}">
             <div class="nav-list__link search-result" aria-label="${prettyName}" key="${key}" title="${toolTipText}" tooltip-text="${prettyName}" title="${prettyName}">
@@ -135,7 +140,7 @@ export class CommandsViewProvider implements vscode.WebviewViewProvider {
               <tooltip class="nav-list__label" itemKey="${key}" content="${prettyName}" >
                 <span>${prettyName}</span>
               </tooltip>
-            </div>${playButtons}
+            </div>${inputHtml}${playButtons}
           </div>`;
         idx++;
       }

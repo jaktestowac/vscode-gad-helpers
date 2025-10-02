@@ -51,7 +51,7 @@ export function getCommandList(): GadCommand[] {
     {
       key: "gadPullInstallRun",
       func: gadPullInstallRun,
-      prettyName: "GAD Pull, npm Install & Run",
+      prettyName: "Pull, npm Install & Run",
       category: GadCommandsCategory.setup,
       refreshSettings: true,
       onlyPasteAndRun: true,
@@ -64,9 +64,24 @@ export function getCommandList(): GadCommand[] {
       onlyPasteAndRun: true,
     },
     {
+      key: "gadGitListBranches",
+      func: gadGitListBranches,
+      prettyName: "Git List Branches",
+      category: GadCommandsCategory.setup,
+      onlyPasteAndRun: true,
+    },
+    {
+      key: "gadGitCheckoutBranch",
+      func: gadGitCheckoutBranch,
+      prettyName: "Git Checkout",
+      category: GadCommandsCategory.setup,
+      onlyPasteAndRun: true,
+      textBoxInput: { prompt: "Branch name", placeHolder: "main", value: "main" },
+    },
+    {
       key: "gadGitClone",
       func: gadGitClone,
-      prettyName: "GAD Git Clone",
+      prettyName: "Git Clone",
       category: GadCommandsCategory.setup,
     },
     {
@@ -321,6 +336,49 @@ async function gadGitClone(params: CommandParameters) {
     },
     {
       command: `git clone ${GAD_REPO_URL} .`, // Clone into the current directory
+      execute,
+      terminalName: additionalTerminalName,
+    },
+  ]);
+}
+
+async function gadGitCheckoutBranch(params: CommandParameters) {
+  const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
+  const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+  const additionalParameters = params.additionalParameters ?? "";
+  if (!additionalParameters) {
+    showWarningMessage(vscode.l10n.t("Branch name is required."));
+    return;
+  }
+  const additionalTerminalName = "checkout";
+
+  executeCommandsInTerminal([
+    {
+      command: `cd ${value}`,
+      execute,
+      terminalName: additionalTerminalName,
+    },
+    {
+      command: `git checkout ${additionalParameters}`,
+      execute,
+      terminalName: additionalTerminalName,
+    },
+  ]);
+}
+
+async function gadGitListBranches(params: CommandParameters) {
+  const execute = params.instantExecute ?? isCommandExecutedWithoutAsking(params.key) ?? false;
+  const value = MyExtensionContext.instance.getWorkspaceValue(GAD_PROJECT_PATH_KEY) ?? GAD_PROJECT_PATH;
+  const additionalTerminalName = "listBranches";
+
+  executeCommandsInTerminal([
+    {
+      command: `cd ${value}`,
+      execute,
+      terminalName: additionalTerminalName,
+    },
+    {
+      command: `git branch -a --sort=-committerdate`,
       execute,
       terminalName: additionalTerminalName,
     },

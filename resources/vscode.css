@@ -418,3 +418,14 @@ a.nav-list__link {
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* Inline command input: compact width within command row */
+.command-input {
+  display: inline-block !important;
+  width: 140px !important; /* narrower textbox */
+  max-width: 200px;
+  min-width: 100px;
+  flex: none;
+  padding: 2px 4px;
+  margin-left: 6px;
+}

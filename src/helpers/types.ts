@@ -32,6 +32,7 @@ export interface CommandParameters {
   command: string;
   instantExecute?: boolean;
   terminalName?: string;
+  additionalParameters?: string;
 }
 
 export interface GadCommand {
@@ -46,6 +47,11 @@ export interface GadCommand {
   onlyPaste?: boolean;
   refreshSettings?: boolean;
   instantExecute?: boolean;
+  textBoxInput?: {
+    prompt: string;
+    placeHolder?: string;
+    value?: string;
+  };
 }
 
 export interface GadFeature {

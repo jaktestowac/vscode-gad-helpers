@@ -2,11 +2,17 @@
 
 All notable changes to the "gad-helpers" extension will be documented in this file.
 
-## [0.1.9] - 2025-xx-xx
+## [1.0.1] - 2025-xx-xx
 
 - TBD:
 
-## [0.1.8] - 2025-xx-xx
+## [1.0.0] - 2025-10-02
+
+- feat: branch management commands (checkout)
+- feat: branch management commands (list)
+- chore: update version to 1.0.0
+
+## [0.1.8] - 2025-07-15
 
 - fix: GAD MCP server name
 

@@ -35,11 +35,18 @@
   const commandItems = document.querySelectorAll(".nav-list__item");
   for (const item of commandItems) {
     item.addEventListener("dblclick", (event) => {
+      // If this command has a textbox, ignore double-click (use Enter instead)
+      const hasInput = !!item.querySelector(".command-input");
+      if (hasInput) {
+        event.stopPropagation();
+        return;
+      }
       // Find the run icon within this item
       const runIcon = item.querySelector(".run-icon");
       if (runIcon && !runIcon.classList.contains("loading")) {
         const attributeKey = runIcon.getAttribute("key");
-        vscode.postMessage({ type: "invokeCommand", key: attributeKey, instantExecute: true });
+        const additionalParameters = getAdditionalParametersForKey(attributeKey);
+        vscode.postMessage({ type: "invokeCommand", key: attributeKey, instantExecute: true, additionalParameters });
 
         // Disable the button and show loading indicator
         runIcon.classList.add("loading");
@@ -60,6 +67,22 @@
     });
   }
 
+  // Pressing Enter inside a textbox executes the command with the provided value
+  const commandInputs = document.querySelectorAll(".command-input");
+  for (const input of commandInputs) {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const attributeKey = input.getAttribute("data-key");
+        if (!attributeKey) {
+          return;
+        }
+        const additionalParameters = getAdditionalParametersForKey(attributeKey);
+        vscode.postMessage({ type: "invokeCommand", key: attributeKey, instantExecute: true, additionalParameters });
+        e.stopPropagation();
+      }
+    });
+  }
+
   const runIcons = document.querySelectorAll(".run-icon");
   for (const runIcon of runIcons) {
     runIcon.addEventListener("click", () => {
@@ -68,7 +91,8 @@
       }
 
       const attributeKey = runIcon.getAttribute("key");
-      vscode.postMessage({ type: "invokeCommand", key: attributeKey, instantExecute: true });
+      const additionalParameters = getAdditionalParametersForKey(attributeKey);
+      vscode.postMessage({ type: "invokeCommand", key: attributeKey, instantExecute: true, additionalParameters });
 
       // Disable the button and show a loading indicator
       // for a second to let the user know the command is running
@@ -91,7 +115,8 @@
         return;
       }
       const attributeKey = runIcon.getAttribute("key");
-      vscode.postMessage({ type: "invokeCommand", key: attributeKey, instantExecute: false });
+      const additionalParameters = getAdditionalParametersForKey(attributeKey);
+      vscode.postMessage({ type: "invokeCommand", key: attributeKey, instantExecute: false, additionalParameters });
 
       // Disable the button and show a loading indicator
       // for a second to let the user know the command is running
@@ -290,5 +315,19 @@
         }
       }
     }
+  }
+
+  function getAdditionalParametersForKey(key) {
+    // Find input adjacent to the buttons with matching data-key
+    const container = document.querySelector(`.nav-list__item[key="${key}"]`);
+    if (!container) {
+      return undefined;
+    }
+    const input = container.querySelector(".command-input");
+    if (!input) {
+      return undefined;
+    }
+    // @ts-ignore
+    return input.value;
   }
 })();
